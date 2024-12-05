@@ -20,7 +20,6 @@ public class PlayerController : MonoBehaviour
     PlayerInput playerInput;
     InputAction moveAction;
     InputAction lookAction;
-    InputAction ascendAction;
 
     private float verticalRotation;
 
@@ -47,7 +46,6 @@ public class PlayerController : MonoBehaviour
         throw new NotImplementedException();
     }
 
-    private Vector3 currentMovement;
     private void HandleMovement()
     {
         var moveInput = moveAction.ReadValue<Vector3>();
