@@ -13,7 +13,7 @@ public class InputHandler : MonoBehaviour
     [SerializeField] private string actionMapName = "Player";
 
     [Header("Acton Name References")]
-    [SerializeField] private string moveActionName = " Move";
+    [SerializeField] private string moveActionName = "Move";
     [SerializeField] private string ascendActionName = "Ascend";
     [SerializeField] private string lookActionName = "Look";
     [SerializeField] private string fireActionName = "Fire";
@@ -28,7 +28,7 @@ public class InputHandler : MonoBehaviour
     public Vector2 lookInput { get; private set; }
     public bool FireInput { get; private set; }
 
-    public static InputHandler Instance;
+    public static InputHandler Instance { get; private set; }
 
     private void Awake()
     {
