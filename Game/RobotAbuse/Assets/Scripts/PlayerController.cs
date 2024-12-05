@@ -39,7 +39,7 @@ public class PlayerController : MonoBehaviour
     {
         HandleMovement();
         HandleRotation();
-        //HandleFire();
+        HandleFire();
     }
 
     private void HandleFire()
