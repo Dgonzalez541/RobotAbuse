@@ -10,7 +10,7 @@ namespace RobotAbuse
         [SerializeField] public float MoveSpeed = 300f;
 
         [Header("Look Sensitivity")]
-        [SerializeField] private float lookSensitivity = 2f;
+        [SerializeField] private float lookSensitivity = 1f;
         [SerializeField] private float upDownRange = 80f;
 
         private CharacterController characterController;
@@ -20,7 +20,7 @@ namespace RobotAbuse
         InputAction moveAction;
         InputAction lookAction;
 
-        Movement movement;
+        MovementController movement;
 
         private float verticalRotation;
 
@@ -33,7 +33,7 @@ namespace RobotAbuse
             moveAction = playerInput.actions["Move"];
             lookAction = playerInput.actions["Look"];
 
-            movement = new Movement();
+            movement = new MovementController();
         }
 
         Vector2 look;
@@ -41,7 +41,7 @@ namespace RobotAbuse
         {
             HandleMovement();
             HandleRotation();
-            HandleFire();
+            //HandleFire();
         }
 
         private void HandleFire()
@@ -59,26 +59,13 @@ namespace RobotAbuse
             characterController.Move(input);
         }
 
-        /*private Vector3 CalculateMovement(float time, Vector3 moveInput, float speed)
-        {
-            var input = new Vector3();
-            input += transform.forward * moveInput.y;
-            input += transform.right * moveInput.x;
-            input += transform.up * moveInput.z;
-            input = Vector3.ClampMagnitude(input, 1f);
-            input = input * speed * time;
-            return input;
-        }*/
-
         private void HandleRotation()
         {
             var lookInput = lookAction.ReadValue<Vector2>();
-            float mouseXRotation = lookInput.x;
-            transform.Rotate(0, mouseXRotation, 0);
+            transform.Rotate(0, lookInput.x, 0); //Horizontal Rotation
 
-            verticalRotation -= lookInput.y * lookSensitivity;
-            verticalRotation = Mathf.Clamp(verticalRotation, -upDownRange, upDownRange);
-            mainCamera.transform.localRotation = Quaternion.Euler(verticalRotation, 0, 0);
+            verticalRotation = movement.CalculateVerticalRotation(lookInput, verticalRotation, lookSensitivity, upDownRange);
+            mainCamera.transform.localRotation = Quaternion.Euler(verticalRotation, 0, 0); 
         }
     }
 }
