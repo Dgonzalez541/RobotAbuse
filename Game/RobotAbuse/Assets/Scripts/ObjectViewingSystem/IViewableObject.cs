@@ -6,6 +6,6 @@ namespace RobotAbuse
 {
     public interface IViewableObject
     {
-
+         public GameObject[] AdditonalGameObjects { get; }
     }
 }

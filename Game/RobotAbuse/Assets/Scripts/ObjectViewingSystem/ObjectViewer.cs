@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 
 namespace RobotAbuse
 {
+    [System.Serializable]
     public class ObjectViewer 
     {
         public GameObject DetectedGameObject { get; private set; }
@@ -39,9 +40,8 @@ namespace RobotAbuse
             if(DetectedGameObject != null && DetectedGameObject.GetComponent<IHighlightable>() != null)
             {
                 DetectedGameObject.GetComponent<IHighlightable>().Unhighlight();
-            }
-            
-            DetectedGameObject = null;
+                DetectedGameObject = null;
+            }   
         }
 
     }

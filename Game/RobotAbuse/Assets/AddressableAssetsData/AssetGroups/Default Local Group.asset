@@ -23,7 +23,22 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dfa6f2b684c96bc4eaf4b89bf0352e4d
-    m_Address: Assets/Materials/M_Emissive Variant.mat
+    m_Address: Assets/Materials/M_Emissive_Green.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6337887b8bc71ce4c942aa9cd5be18db
+    m_Address: Assets/Materials/M_Emissive_Red.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6b69aec5eaf8fbc42bfce2cb598d4133
+    m_Address: Assets/Materials/M_Emissive_Blue.mat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d284c7ce9d180b947a9e2f024de33343
+    m_Address: Assets/Materials/M_Emissive_Yellow.mat
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
