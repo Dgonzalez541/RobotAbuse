@@ -19,8 +19,10 @@ namespace RobotAbuse
         PlayerInput playerInput;
         InputAction moveAction;
         InputAction lookAction;
+        InputAction fireAction;
 
         MovementController movement;
+        ObjectViewer objectViewer;
 
         private float verticalRotation;
 
@@ -32,8 +34,18 @@ namespace RobotAbuse
             playerInput = gameObject.GetComponent<PlayerInput>();
             moveAction = playerInput.actions["Move"];
             lookAction = playerInput.actions["Look"];
+            fireAction = playerInput.actions["Fire"];
+
+            fireAction.performed += OnFire;
 
             movement = new MovementController();
+            objectViewer = new ObjectViewer();
+        }
+
+        private void OnFire(InputAction.CallbackContext context)
+        {
+            var ray = mainCamera.ScreenPointToRay(Mouse.current.position.value);
+            objectViewer.DetectObject(ray);
         }
 
         Vector2 look;
@@ -41,19 +53,12 @@ namespace RobotAbuse
         {
             HandleMovement();
             HandleRotation();
-            //HandleFire();
-        }
-
-        private void HandleFire()
-        {
-            throw new NotImplementedException();
         }
 
         private void HandleMovement()
         {
             var time = Time.deltaTime;
             var moveInput = moveAction.ReadValue<Vector3>();
-
             Vector3 input = movement.Calculate(transform, moveInput, MoveSpeed, time);
 
             characterController.Move(input);
