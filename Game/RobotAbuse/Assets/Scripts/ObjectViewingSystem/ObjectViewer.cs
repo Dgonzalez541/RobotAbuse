@@ -28,6 +28,7 @@ namespace RobotAbuse
                     }
                     return true;
                 }
+                
             }
             ClearDetectedObject();
             return false;
@@ -35,7 +36,11 @@ namespace RobotAbuse
 
         void ClearDetectedObject()
         {
-            DetectedGameObject.GetComponent<IHighlightable>().Unhighlight();
+            if(DetectedGameObject != null && DetectedGameObject.GetComponent<IHighlightable>() != null)
+            {
+                DetectedGameObject.GetComponent<IHighlightable>().Unhighlight();
+            }
+            
             DetectedGameObject = null;
         }
 

@@ -1,14 +1,24 @@
+
+using System;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace RobotAbuse
 {
+    [System.Serializable]
+    public class AssetReferenceMaterial : AssetReferenceT<Material>
+    {
+        public AssetReferenceMaterial(string guid) : base(guid) {}
+    }
+
     public class ViewableObject : MonoBehaviour, IViewableObject, IHighlightable
     {
-        [SerializeField] Material HighlightMaterial;
+        [SerializeField] AssetReferenceMaterial materialReference;
+
+        Material highlightMaterial;
         Material originalMaterial;
-        
-        [SerializeField] Color HighlightColor = Color.white;
-        
+
         MeshRenderer meshRenderer;
 
 
@@ -16,19 +26,22 @@ namespace RobotAbuse
         {
             meshRenderer = GetComponent<MeshRenderer>();
             originalMaterial = meshRenderer.material;
-
-            HighlightMaterial.color = HighlightColor;
+            Addressables.LoadAssetsAsync<Material>(materialReference, (material) => 
+            {
+                highlightMaterial = material;   
+            });
         }
 
         public void Highlight()
         {
-            meshRenderer.material = HighlightMaterial;
+            
+            meshRenderer.material = highlightMaterial;
         }
 
         public void Unhighlight()
         {
-            meshRenderer.material= originalMaterial;
 
+            meshRenderer.material = originalMaterial;
         }
     }
 }

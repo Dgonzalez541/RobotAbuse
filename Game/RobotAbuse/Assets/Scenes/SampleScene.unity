@@ -97,7 +97,8 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: 01841ce4d4710a64c94965f0f775df76,
+    type: 2}
   m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
@@ -141,7 +142,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!136 &15083283
 CapsuleCollider:
@@ -243,6 +244,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 303e03c4725e5dd4f8febe2a96f49d1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  materialReference:
+    m_AssetGUID: dfa6f2b684c96bc4eaf4b89bf0352e4d
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  HighlightColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -516,7 +523,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!136 &536825626
 CapsuleCollider:
@@ -618,6 +625,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 303e03c4725e5dd4f8febe2a96f49d1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  materialReference:
+    m_AssetGUID: dfa6f2b684c96bc4eaf4b89bf0352e4d
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  HighlightColor: {r: 0, g: 0.038576126, b: 1, a: 1}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -843,7 +856,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!65 &1777690944
 BoxCollider:
@@ -886,7 +899,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: d7d080b1925b7964293e7cd779af2c01, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -948,7 +961,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!64 &2015509350
 MeshCollider:
@@ -1055,7 +1068,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!136 &2059714595
 CapsuleCollider:
@@ -1157,6 +1170,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 303e03c4725e5dd4f8febe2a96f49d1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  materialReference:
+    m_AssetGUID: dfa6f2b684c96bc4eaf4b89bf0352e4d
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_EditorAssetChanged: 0
+  HighlightColor: {r: 0, g: 1, b: 0.047753334, a: 1}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
