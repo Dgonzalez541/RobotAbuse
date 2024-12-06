@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -20,8 +19,10 @@ namespace RobotAbuse
         InputAction moveAction;
         InputAction lookAction;
         InputAction fireAction;
+        InputAction lookTriggerAction;
 
         MovementController movement;
+
         ObjectViewer objectViewer;
 
         private float verticalRotation;
@@ -35,24 +36,40 @@ namespace RobotAbuse
             moveAction = playerInput.actions["Move"];
             lookAction = playerInput.actions["Look"];
             fireAction = playerInput.actions["Fire"];
+            lookTriggerAction = playerInput.actions["LookTrigger"];
 
             fireAction.performed += OnFire;
 
+            lookTriggerAction.started += OnLookTrigger;
+            lookTriggerAction.canceled += OnLookTriggerCancled;
+
             movement = new MovementController();
+
             objectViewer = new ObjectViewer();
+        }
+        private void Update()
+        {
+            if (movement.IsMoving)
+            {
+                HandleMovement();
+                HandleRotation();
+            }
+        }
+
+        private void OnLookTriggerCancled(InputAction.CallbackContext context)
+        {
+            movement.IsMoving = false;
+        }
+
+        private void OnLookTrigger(InputAction.CallbackContext context)
+        {
+            movement.IsMoving = true;
         }
 
         private void OnFire(InputAction.CallbackContext context)
         {
             var ray = mainCamera.ScreenPointToRay(Mouse.current.position.value);
             objectViewer.DetectObject(ray);
-        }
-
-        Vector2 look;
-        private void Update()
-        {
-            HandleMovement();
-            HandleRotation();
         }
 
         private void HandleMovement()

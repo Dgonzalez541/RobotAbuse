@@ -11,7 +11,7 @@
                     "id": "d7455ff2-907f-424a-b26e-80c9d2f50990",
                     "expectedControlType": "Vector3",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "Hold",
                     "initialStateCheck": true
                 },
                 {
@@ -22,6 +22,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "LookTrigger",
+                    "type": "Button",
+                    "id": "93d8b757-61d3-409e-9331-b3a5f4bcc79d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Hold",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Fire",
@@ -196,6 +205,17 @@
                     "processors": "",
                     "groups": "XR",
                     "action": "Fire",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "694000fe-b54c-47bd-8969-07adaabad3e9",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LookTrigger",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

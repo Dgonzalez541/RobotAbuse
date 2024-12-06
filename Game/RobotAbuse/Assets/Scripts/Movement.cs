@@ -4,10 +4,7 @@ namespace RobotAbuse
 {
     public class MovementController
     {
-        public MovementController()
-        {
-
-        }
+        public bool IsMoving;
         public UnityEngine.Vector3 Calculate(Transform transform, Vector3 moveInput, float speed, float time)
         {
             var input = new Vector3();
