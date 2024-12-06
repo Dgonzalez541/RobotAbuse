@@ -6,27 +6,38 @@ namespace RobotAbuse
 {
     public class ObjectViewer 
     {
+        public GameObject DetectedGameObject { get; private set; }
         public bool DetectObject(Ray ray)
         {
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
-                var hitObject = hit.transform.gameObject.GetComponent<IViewableObject>();
+                if(DetectedGameObject != null && hit.transform.gameObject != DetectedGameObject)
+                {
+                    ClearDetectedObject();
+                }
+                DetectedGameObject = hit.transform.gameObject;
+                var hitObject = DetectedGameObject.GetComponent<IViewableObject>();
                 if (hitObject != null)
                 {
-                    Debug.Log("Hit" + hit.transform.gameObject.name);
+                    Debug.Log("Hit" + DetectedGameObject.name);
+                    var highlightableObject = DetectedGameObject.GetComponent<IHighlightable>();
+                    if (highlightableObject != null)
+                    {
+                        highlightableObject.Highlight();
+                    }
                     return true;
                 }
-                else
-                {
-                    Debug.Log("Hit Invalid Object");
-                }
             }
-            else
-            {
-                Debug.Log("Did not Hit");
-            }
+            ClearDetectedObject();
             return false;
         }
+
+        void ClearDetectedObject()
+        {
+            DetectedGameObject.GetComponent<IHighlightable>().Unhighlight();
+            DetectedGameObject = null;
+        }
+
     }
 }

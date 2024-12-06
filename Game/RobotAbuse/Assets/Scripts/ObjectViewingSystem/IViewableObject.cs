@@ -6,6 +6,6 @@ namespace RobotAbuse
 {
     public interface IViewableObject
     {
-        Mesh[] Meshs { get;}
+
     }
 }

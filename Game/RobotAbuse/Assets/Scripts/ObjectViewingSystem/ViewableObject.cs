@@ -1,12 +1,34 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace RobotAbuse
 {
-    public class ViewableObject : MonoBehaviour, IViewableObject
+    public class ViewableObject : MonoBehaviour, IViewableObject, IHighlightable
     {
-        [SerializeField] public Mesh[] Meshs { get; private set; }
+        [SerializeField] Material HighlightMaterial;
+        Material originalMaterial;
+        
+        [SerializeField] Color HighlightColor = Color.white;
+        
+        MeshRenderer meshRenderer;
 
+
+        void Awake()
+        {
+            meshRenderer = GetComponent<MeshRenderer>();
+            originalMaterial = meshRenderer.material;
+
+            HighlightMaterial.color = HighlightColor;
+        }
+
+        public void Highlight()
+        {
+            meshRenderer.material = HighlightMaterial;
+        }
+
+        public void Unhighlight()
+        {
+            meshRenderer.material= originalMaterial;
+
+        }
     }
 }
