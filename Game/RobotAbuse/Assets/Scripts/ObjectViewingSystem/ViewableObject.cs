@@ -14,13 +14,16 @@ namespace RobotAbuse
     }
 
     [DisallowMultipleComponent]
-    public class ViewableObject : MonoBehaviour, IViewableObject, IHighlightable
+    public class ViewableObject : MonoBehaviour, IViewableObject, IHighlightable, ISocketable
     {
         [field: SerializeField] public GameObject[] AdditonalGameObjects { get; set; }
         Dictionary<GameObject,Material> dictGameObjectMaterial = new Dictionary<GameObject,Material>();
 
         [SerializeField] AssetReferenceMaterial materialReference;
         public bool IsHighlighted { get; private set; } = false;
+
+        public PartSocket PartSocket { get { return partSocket; } set { partSocket = value; } }
+        PartSocket partSocket;
 
         Material highlightMaterial;
         Material originalMaterial;
@@ -39,6 +42,18 @@ namespace RobotAbuse
             {
                 dictGameObjectMaterial.Add(go, go.GetComponent<MeshRenderer>().material);
             }
+
+            partSocket = GetComponentInChildren<PartSocket>();
+            if(partSocket != null)
+            {
+                partSocket.OnTriggerEntered += PartSocket_OnTriggerEntered;
+            }
+
+        }
+
+        private void PartSocket_OnTriggerEntered(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
         }
 
         public void Highlight()
@@ -65,6 +80,14 @@ namespace RobotAbuse
                     go.GetComponent<MeshRenderer>().material = addtionalGoOriginalMat;
                 }
                 
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (partSocket != null)
+            {
+                partSocket.OnTriggerEntered -= PartSocket_OnTriggerEntered;
             }
         }
     }
