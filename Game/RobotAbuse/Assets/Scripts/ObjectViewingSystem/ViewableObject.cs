@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -11,10 +12,12 @@ namespace RobotAbuse
     {
         public AssetReferenceMaterial(string guid) : base(guid) {}
     }
+
     [DisallowMultipleComponent]
     public class ViewableObject : MonoBehaviour, IViewableObject, IHighlightable
     {
         [field: SerializeField] public GameObject[] AdditonalGameObjects { get; set; }
+        Dictionary<GameObject,Material> dictGameObjectMaterial = new Dictionary<GameObject,Material>();
 
         [SerializeField] AssetReferenceMaterial materialReference;
         public bool IsHighlighted { get; private set; } = false;
@@ -31,6 +34,11 @@ namespace RobotAbuse
             {
                 highlightMaterial = material;   
             });
+
+            foreach(GameObject go in AdditonalGameObjects)
+            {
+                dictGameObjectMaterial.Add(go, go.GetComponent<MeshRenderer>().material);
+            }
         }
 
         public void Highlight()
@@ -40,16 +48,7 @@ namespace RobotAbuse
 
             foreach(var go in AdditonalGameObjects) 
             {
-                var viewableObject = go.GetComponent<IViewableObject>();
-                if(viewableObject != null) 
-                {
-                    var highlightableObject = go.GetComponent<IHighlightable>();
-                    if (highlightableObject != null && highlightableObject.IsHighlighted ==false)
-                    {
-                        highlightableObject.Highlight();
-                    }
-                }
-
+                go.GetComponent<MeshRenderer>().material = highlightMaterial;
             }
         }
 
@@ -58,17 +57,14 @@ namespace RobotAbuse
             meshRenderer.material = originalMaterial;
             IsHighlighted = false;
 
-            foreach(var go in AdditonalGameObjects)
+            foreach (var go in AdditonalGameObjects)
             {
-                var viewableObject = go.GetComponent<IViewableObject>();
-                if (viewableObject != null)
+                Material addtionalGoOriginalMat;
+                if(dictGameObjectMaterial.TryGetValue(go, out addtionalGoOriginalMat))
                 {
-                    var highlightableObject = go.GetComponent<IHighlightable>();
-                    if (highlightableObject != null && highlightableObject.IsHighlighted == true)
-                    {
-                        highlightableObject.Unhighlight();
-                    }
+                    go.GetComponent<MeshRenderer>().material = addtionalGoOriginalMat;
                 }
+                
             }
         }
     }

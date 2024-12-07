@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -26,6 +27,7 @@ namespace RobotAbuse
         ObjectViewer objectViewer;
 
         private float verticalRotation;
+        private Vector3 mousePosition;
 
         private void Awake()
         {
@@ -39,6 +41,7 @@ namespace RobotAbuse
             lookTriggerAction = playerInput.actions["LookTrigger"];
 
             fireAction.performed += OnFire;
+            fireAction.canceled += OnFireCancled;
 
             lookTriggerAction.started += OnLookTrigger;
             lookTriggerAction.canceled += OnLookTriggerCancled;
@@ -47,6 +50,7 @@ namespace RobotAbuse
 
             objectViewer = new ObjectViewer();
         }
+
         private void Update()
         {
             if (movement.IsMoving)
@@ -54,11 +58,18 @@ namespace RobotAbuse
                 HandleMovement();
                 HandleRotation();
             }
+
+            if(objectViewer.IsDragging)
+            {
+                HandleDragging();
+            }
         }
 
-        private void OnLookTriggerCancled(InputAction.CallbackContext context)
+        private void HandleDragging()
         {
-            movement.IsMoving = false;
+            var inputPosition = Mouse.current.position.value;
+            var pos = mainCamera.ScreenToWorldPoint(new Vector3(inputPosition.x, inputPosition.y, 0) - mousePosition);
+            objectViewer.DragObject(pos);
         }
 
         private void OnLookTrigger(InputAction.CallbackContext context)
@@ -66,10 +77,24 @@ namespace RobotAbuse
             movement.IsMoving = true;
         }
 
+        private void OnLookTriggerCancled(InputAction.CallbackContext context)
+        {
+            movement.IsMoving = false;
+        }
+
         private void OnFire(InputAction.CallbackContext context)
         {
             var ray = mainCamera.ScreenPointToRay(Mouse.current.position.value);
-            objectViewer.DetectObject(ray);
+
+            if (objectViewer.DetectObject(ray))
+            {
+                var inputPosition = Mouse.current.position.value;
+                mousePosition = new Vector3(inputPosition.x, inputPosition.y, 0) - mainCamera.WorldToScreenPoint(objectViewer.DetectedGameObject.transform.position);
+            }
+        }
+        private void OnFireCancled(InputAction.CallbackContext context)
+        {
+            objectViewer.StopDragging();
         }
 
         private void HandleMovement()
