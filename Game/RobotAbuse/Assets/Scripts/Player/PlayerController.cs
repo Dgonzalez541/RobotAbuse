@@ -48,7 +48,7 @@ namespace RobotAbuse
 
             movement = new MovementController();
 
-            objectViewer = new ObjectViewer();
+            objectViewer = gameObject.AddComponent<ObjectViewer>();
         }
 
         private void Update()

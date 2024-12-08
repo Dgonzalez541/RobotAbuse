@@ -1,16 +1,18 @@
 using UnityEngine;
-using System.Collections;
-using UnityEngine.InputSystem;
-using System.Linq;
 
 namespace RobotAbuse
 {
     [System.Serializable]
-    public class ObjectViewer 
+    public class ObjectViewer : MonoBehaviour
     {
         public GameObject DetectedGameObject { get; private set; }
+        public IViewableObject DetectedViewableObject { get; private set; }
 
-        public bool IsDragging { get; private set; }
+        public bool IsDragging { get; private set; } = false;
+
+        public bool IsConnectingSocket { get; private set; } = false;
+
+        PartSocket targetPartSocket;
 
         public bool DetectObject(Ray ray)
         {
@@ -27,7 +29,7 @@ namespace RobotAbuse
 
                 if (hitObject != null)
                 {
-                    Debug.Log("Hit" + DetectedGameObject.name);
+                    DetectedViewableObject = hitObject;
                     var highlightableObject = DetectedGameObject.GetComponent<IHighlightable>();
                     if (highlightableObject != null)
                     {
@@ -49,7 +51,7 @@ namespace RobotAbuse
                         if(go.GetComponent<IViewableObject>() != null) 
                         {
                             
-
+                            DetectedViewableObject = go.GetComponent<IViewableObject>();
                             go.GetComponent<IHighlightable>().Highlight();
                             IsDragging=true;
 
@@ -72,10 +74,45 @@ namespace RobotAbuse
 
         private void PartSocket_OnTriggerEntered(object sender, System.EventArgs e)
         {
-            Debug.Log("Trigger: " + sender);
+            if (!IsConnectingSocket)
+            {
+                foreach (var go in DetectedGameObject.GetComponentsInParent<Transform>())
+                {
+                    if (go.GetComponent<IViewableObject>() != null)
+                    {
+                        var onPartSocketEventArgs = e as OnPartSocketEnterEventArgs;
+                        IsConnectingSocket = true;
+
+                        targetPartSocket = onPartSocketEventArgs.OtherPartSocket;
+                        break;
+                    }
+                }
+            }
+
         }
 
-        void ClearDetectedObject()
+        void Update()
+        {
+            if(IsConnectingSocket)
+            {
+                StopDragging();
+
+                var detectedVo = DetectedViewableObject as ViewableObject;
+
+                var currentGrabbedPartSocketPosition = detectedVo.gameObject.transform.position;
+                var connectingSocketPartTargetPosition = targetPartSocket.gameObject.transform.position;
+
+                detectedVo.transform.position = Vector3.Lerp(currentGrabbedPartSocketPosition, connectingSocketPartTargetPosition, 100f * Time.deltaTime);
+               
+                if (detectedVo.transform.position == currentGrabbedPartSocketPosition)
+                {
+                    IsConnectingSocket = false;
+                }
+            }
+        }
+    
+
+    void ClearDetectedObject()
         {
             if(DetectedGameObject != null && DetectedGameObject.GetComponent<IHighlightable>() != null)
             {
@@ -88,7 +125,7 @@ namespace RobotAbuse
             }
 
             DetectedGameObject = null;
-            IsDragging = false;
+            StopDragging();
         }
 
         public void DragObject(Vector3 currentMousePosition)

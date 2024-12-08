@@ -53,7 +53,6 @@ namespace RobotAbuse
 
         private void PartSocket_OnTriggerEntered(object sender, EventArgs e)
         {
-            //throw new NotImplementedException();
         }
 
         public void Highlight()
