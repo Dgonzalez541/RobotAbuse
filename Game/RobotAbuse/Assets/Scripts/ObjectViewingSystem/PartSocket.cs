@@ -88,8 +88,8 @@ namespace RobotAbuse
         }
 
         private void OnTriggerEnter(Collider other)
-        {     
-            if(other.gameObject.GetComponent<PartSocket>() != null && !other.gameObject.GetComponent<PartSocket>().IsConnected)
+        {
+            if(other.gameObject.GetComponent<PartSocket>() != null)
             {
                 IsConnected = true;
                 AttachedPartSocket = other.gameObject.GetComponent<PartSocket>();

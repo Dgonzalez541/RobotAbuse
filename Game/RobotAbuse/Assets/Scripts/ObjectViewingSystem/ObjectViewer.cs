@@ -44,6 +44,7 @@ namespace RobotAbuse
             {
                 if(DetectedGameObject != null && hit.transform.gameObject != DetectedGameObject)
                 {
+                    OnHideAllSockets?.Invoke(this, EventArgs.Empty);
                     ClearDetectedObject();
                 }
 
@@ -58,33 +59,41 @@ namespace RobotAbuse
                     var highlightableObject = DetectedGameObject.GetComponent<IHighlightable>();
                     if (highlightableObject != null)
                     {
-                        OnObjectDetected();
+                        //OnObjectDetected();
+                        highlightableObject.Highlight();
                     }
                     return true;
                 }
                 else //Hit a game object without IViewalbe (IViewable additonal game object)
                 {
+                    DetectedGameObject = hit.transform.gameObject;
                     //Find parent with IViewableObject
-                    foreach(var go in DetectedGameObject.GetComponentsInParent<Transform>())
+                    foreach (var go in DetectedGameObject.GetComponentsInParent<Transform>())
                     {
                         if(go.GetComponent<IViewableObject>() != null) 
                         {
-                            
-                            DetectedViewableObject = go.GetComponent<IViewableObject>();
-                            OnObjectDetected();
                             DetectedGameObject = go.gameObject;
+                            DetectedViewableObject = go.GetComponent<IViewableObject>();
+                            //OnObjectDetected();
+                            var highlightableObject = DetectedGameObject.GetComponent<IHighlightable>();
+                            if (highlightableObject != null)
+                            {
+                                //OnObjectDetected();
+                                highlightableObject.Highlight();
+                            }
+
                             return true;
                         }
                     }
                 }
                 
             }
-
+            
             ClearDetectedObject();
             return false;
         }
 
-        private void OnObjectDetected()
+        public void OnObjectDetected()
         {
             //Start dragging object
             IsDragging = true;
@@ -151,8 +160,11 @@ namespace RobotAbuse
 
         void ClearDetectedObject()
         {
-            StopDragging();
-
+            if(IsDragging) 
+            {
+                StopDragging();
+            }
+            
             if (DetectedGameObject != null && DetectedGameObject.GetComponent<IHighlightable>() != null)
             {
                 DetectedGameObject.GetComponent<IHighlightable>().Unhighlight();
@@ -164,8 +176,6 @@ namespace RobotAbuse
                 detectedPartSocket.OnSocketPartsConnected -= PartSocket_OnSocketsConnected;
                 OnSocketDetach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = detectedPartSocket, OtherPartSocket = detectedPartSocket.AttachedPartSocket });
             }
-
-            OnHideAllSockets?.Invoke(this, EventArgs.Empty);
 
             DetectedGameObject = null;
         }

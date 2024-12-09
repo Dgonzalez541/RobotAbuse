@@ -63,6 +63,18 @@ namespace RobotAbuse
             {
                 HandleDragging();
             }
+
+            if(!objectViewer.IsDragging)
+            {
+                HandleObjectSensing();
+            }
+            
+        }
+
+        private void HandleObjectSensing()
+        {
+            var ray = mainCamera.ScreenPointToRay(Mouse.current.position.value);
+            objectViewer.DetectObject(ray);
         }
 
         private void HandleDragging()
@@ -84,13 +96,13 @@ namespace RobotAbuse
 
         private void OnFire(InputAction.CallbackContext context)
         {
-            var ray = mainCamera.ScreenPointToRay(Mouse.current.position.value);
-
-            if (objectViewer.DetectObject(ray))
+            var inputPosition = Mouse.current.position.value;
+            if(objectViewer.DetectedGameObject != null) 
             {
-                var inputPosition = Mouse.current.position.value;
                 mousePosition = new Vector3(inputPosition.x, inputPosition.y, 0) - mainCamera.WorldToScreenPoint(objectViewer.DetectedGameObject.transform.position);
+                objectViewer.OnObjectDetected();
             }
+            
         }
         private void OnFireCancled(InputAction.CallbackContext context)
         {
