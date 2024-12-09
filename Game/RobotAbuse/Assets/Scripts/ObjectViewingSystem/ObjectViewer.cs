@@ -151,20 +151,23 @@ namespace RobotAbuse
 
         void ClearDetectedObject()
         {
-            if(DetectedGameObject != null && DetectedGameObject.GetComponent<IHighlightable>() != null)
+            StopDragging();
+
+            if (DetectedGameObject != null && DetectedGameObject.GetComponent<IHighlightable>() != null)
             {
                 DetectedGameObject.GetComponent<IHighlightable>().Unhighlight();
             }
 
             if (DetectedGameObject != null && DetectedGameObject.GetComponent<ISocketable>() != null && DetectedGameObject.GetComponent<ISocketable>().PartSocket != null)
             {
-                DetectedGameObject.GetComponent<ISocketable>().PartSocket.OnSocketPartsConnected -= PartSocket_OnSocketsConnected;
+                var detectedPartSocket = DetectedGameObject.GetComponent<ISocketable>().PartSocket;
+                detectedPartSocket.OnSocketPartsConnected -= PartSocket_OnSocketsConnected;
+                OnSocketDetach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = detectedPartSocket, OtherPartSocket = detectedPartSocket.AttachedPartSocket });
             }
 
-            DetectedGameObject = null;
-            StopDragging();
-
             OnHideAllSockets?.Invoke(this, EventArgs.Empty);
+
+            DetectedGameObject = null;
         }
 
         public void DragObject(Vector3 currentMousePosition)
