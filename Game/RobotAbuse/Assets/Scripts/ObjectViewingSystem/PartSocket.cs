@@ -1,24 +1,20 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 namespace RobotAbuse
 {
-    public class OnPartSocketEnterEventArgs : EventArgs
-    {
-        public Collider Other;
-        public PartSocket OtherPartSocket;
-    }
-
     [RequireComponent(typeof(SphereCollider))]
     [RequireComponent(typeof(Rigidbody))]
     public class PartSocket : MonoBehaviour
     {
-        public event EventHandler OnTriggerEntered;
-        public SphereCollider SphereCollider { get { return sphereCollider; }  }
-        [SerializeField] SphereCollider sphereCollider;
+        public event EventHandler OnSocketPartsConnected;
+
+        public PartSocket AttachedPartSocket { get; private set; }
+
+        public ObjectViewer ObjectViewer;
+
+        public bool IsConnected { get; private set; } = true;
 
         public IViewableObject SocketOwner { get; private set; }
 
@@ -29,16 +25,64 @@ namespace RobotAbuse
 
             SocketOwner = GetComponentInParent<IViewableObject>();
 
+            ObjectViewer = GameObject.FindObjectOfType<ObjectViewer>();
+
+            HideConnectionCollider();
+        }
+        private void Start()
+        {
+            ObjectViewer.OnSocketDetach += ObjectViewer_OnSocketDetach;
+            ObjectViewer.OnSocketAttach += ObjectViewer_OnSocketAttach;
+        }
+
+        private void ObjectViewer_OnSocketDetach(object sender, EventArgs e)
+        {
+            var eventArgs = e as OnSocketPartsInteractionEventArgs;
+            if (IsConnected || eventArgs.OtherPartSocket == this)
+            {
+                ShowConnectionCollider();
+                IsConnected = false;
+            }
+
+        }
+
+        private void ShowConnectionCollider()
+        {
+            var renderer = GetComponent<Renderer>();
+            renderer.material.SetFloat("_Opacity", .5f);
+        }
+
+        private void ObjectViewer_OnSocketAttach(object sender, EventArgs e)
+        {
+            var eventArgs = e as OnSocketPartsInteractionEventArgs;
+            if (IsConnected || eventArgs.OtherPartSocket == this)
+            {
+                HideConnectionCollider();
+                IsConnected = true;
+            }
+
+        }
+
+        private void HideConnectionCollider()
+        {
+            var renderer = GetComponent<Renderer>();
+            renderer.material.SetFloat("_Opacity", 0f);
         }
 
         private void OnTriggerEnter(Collider other)
-        {
-            
+        {     
             if(other.gameObject.GetComponent<PartSocket>() != null)
             {
-                OnTriggerEntered?.Invoke(this, new OnPartSocketEnterEventArgs { Other = other, OtherPartSocket = other.gameObject.GetComponent<PartSocket>() }); ;
+                IsConnected = true;
+                AttachedPartSocket = other.gameObject.GetComponent<PartSocket>();
+                OnSocketPartsConnected?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = this, OtherPartSocket = other.gameObject.GetComponent<PartSocket>() }); ;
             }
         }
 
+        private void OnDisable()
+        {
+            ObjectViewer.OnSocketDetach -= ObjectViewer_OnSocketDetach;
+            ObjectViewer.OnSocketAttach -= ObjectViewer_OnSocketAttach;
+        }
     }
 }

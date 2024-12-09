@@ -46,7 +46,7 @@ namespace RobotAbuse
             partSocket = GetComponentInChildren<PartSocket>();
             if(partSocket != null)
             {
-                partSocket.OnTriggerEntered += PartSocket_OnTriggerEntered;
+                partSocket.OnSocketPartsConnected += PartSocket_OnTriggerEntered;
             }
 
         }
@@ -86,7 +86,7 @@ namespace RobotAbuse
         {
             if (partSocket != null)
             {
-                partSocket.OnTriggerEntered -= PartSocket_OnTriggerEntered;
+                partSocket.OnSocketPartsConnected -= PartSocket_OnTriggerEntered;
             }
         }
     }
