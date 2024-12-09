@@ -44,7 +44,6 @@ namespace RobotAbuse
             {
                 if(DetectedGameObject != null && hit.transform.gameObject != DetectedGameObject)
                 {
-                    OnHideAllSockets?.Invoke(this, EventArgs.Empty);
                     ClearDetectedObject();
                 }
 
@@ -59,7 +58,6 @@ namespace RobotAbuse
                     var highlightableObject = DetectedGameObject.GetComponent<IHighlightable>();
                     if (highlightableObject != null)
                     {
-                        //OnObjectDetected();
                         highlightableObject.Highlight();
                     }
                     return true;
@@ -74,11 +72,9 @@ namespace RobotAbuse
                         {
                             DetectedGameObject = go.gameObject;
                             DetectedViewableObject = go.GetComponent<IViewableObject>();
-                            //OnObjectDetected();
                             var highlightableObject = DetectedGameObject.GetComponent<IHighlightable>();
                             if (highlightableObject != null)
                             {
-                                //OnObjectDetected();
                                 highlightableObject.Highlight();
                             }
 
@@ -88,7 +84,7 @@ namespace RobotAbuse
                 }
                 
             }
-            
+
             ClearDetectedObject();
             return false;
         }
@@ -176,7 +172,7 @@ namespace RobotAbuse
                 detectedPartSocket.OnSocketPartsConnected -= PartSocket_OnSocketsConnected;
                 OnSocketDetach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = detectedPartSocket, OtherPartSocket = detectedPartSocket.AttachedPartSocket });
             }
-
+            OnHideAllSockets?.Invoke(this, EventArgs.Empty);
             DetectedGameObject = null;
         }
 
