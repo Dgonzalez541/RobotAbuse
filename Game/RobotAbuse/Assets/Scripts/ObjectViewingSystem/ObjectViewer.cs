@@ -98,7 +98,13 @@ namespace RobotAbuse
                 socketObject.PartSocket.OnSocketPartsConnected += PartSocket_OnSocketsConnected;
             }
 
-            OnSocketDetach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = socketObject.PartSocket, OtherPartSocket = socketObject.PartSocket.AttachedPartSocket});
+            PartSocket otherPartSocket = null;
+            if(socketObject.PartSocket != null)
+            {
+                otherPartSocket = socketObject.PartSocket.AttachedPartSocket;
+            }
+
+            OnSocketDetach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = socketObject.PartSocket, OtherPartSocket = otherPartSocket});
         }
 
         private void PartSocket_OnSocketsConnected(object sender, System.EventArgs e)
