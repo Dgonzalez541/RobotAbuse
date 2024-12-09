@@ -18,6 +18,7 @@ namespace RobotAbuse
         public bool IsConnected { get; private set; } = true;
 
         public IViewableObject SocketOwner { get; private set; }
+        
 
         private void Awake()
         {
@@ -36,6 +37,7 @@ namespace RobotAbuse
             {
                 if(collider.gameObject.GetComponent<PartSocket>() != null && collider.gameObject.GetComponent<PartSocket>() != this)
                 {
+                    IsConnected = true;
                     AttachedPartSocket = collider.gameObject.GetComponent<PartSocket>();
                 }
             }
@@ -55,12 +57,11 @@ namespace RobotAbuse
         private void ObjectViewer_OnSocketDetach(object sender, EventArgs e)
         {
             var eventArgs = e as OnSocketPartsInteractionEventArgs;
-            if (IsConnected || eventArgs.OtherPartSocket == this)
-            {
-                
+            if (IsConnected && eventArgs.OtherPartSocket == this)
+            {  
                 IsConnected = false;
             }
-            ShowSocket();
+                ShowSocket();
         }
 
         private void ShowSocket()
@@ -88,7 +89,7 @@ namespace RobotAbuse
 
         private void OnTriggerEnter(Collider other)
         {     
-            if(other.gameObject.GetComponent<PartSocket>() != null)
+            if(other.gameObject.GetComponent<PartSocket>() != null && !other.gameObject.GetComponent<PartSocket>().IsConnected)
             {
                 IsConnected = true;
                 AttachedPartSocket = other.gameObject.GetComponent<PartSocket>();
