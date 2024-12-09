@@ -68,10 +68,10 @@ namespace RobotAbuse
             var eventArgs = e as OnSocketPartsInteractionEventArgs;
             if (IsConnected || eventArgs.OtherPartSocket == this)
             {
-                HideConnectionCollider();
                 IsConnected = true;
             }
 
+            HideConnectionCollider();
         }
 
         private void HideConnectionCollider()
