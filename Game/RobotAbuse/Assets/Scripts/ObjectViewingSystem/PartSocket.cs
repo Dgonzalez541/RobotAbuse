@@ -28,7 +28,7 @@ namespace RobotAbuse
 
             ObjectViewer = GameObject.FindObjectOfType<ObjectViewer>();
 
-            HideConnectionCollider();
+            HideSocket();
 
             //Find already attached sockets at start
             var colliders = Physics.OverlapSphere(transform.position, GetComponent<SphereCollider>().radius);
@@ -44,6 +44,12 @@ namespace RobotAbuse
         {
             ObjectViewer.OnSocketDetach += ObjectViewer_OnSocketDetach;
             ObjectViewer.OnSocketAttach += ObjectViewer_OnSocketAttach;
+            ObjectViewer.OnHideAllSockets += ObjectViewer_OnHideAllSockets;
+        }
+
+        private void ObjectViewer_OnHideAllSockets(object sender, EventArgs e)
+        {
+            HideSocket();
         }
 
         private void ObjectViewer_OnSocketDetach(object sender, EventArgs e)
@@ -54,10 +60,10 @@ namespace RobotAbuse
                 
                 IsConnected = false;
             }
-            ShowConnectionCollider();
+            ShowSocket();
         }
 
-        private void ShowConnectionCollider()
+        private void ShowSocket()
         {
             var renderer = GetComponent<Renderer>();
             renderer.material.SetFloat("_Opacity", .5f);
@@ -71,10 +77,10 @@ namespace RobotAbuse
                 IsConnected = true;
             }
 
-            HideConnectionCollider();
+            HideSocket();
         }
 
-        private void HideConnectionCollider()
+        private void HideSocket()
         {
             var renderer = GetComponent<Renderer>();
             renderer.material.SetFloat("_Opacity", 0f);

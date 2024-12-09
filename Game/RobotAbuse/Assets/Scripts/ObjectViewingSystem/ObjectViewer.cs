@@ -25,6 +25,7 @@ namespace RobotAbuse
 
         public event EventHandler OnSocketDetach;
         public event EventHandler OnSocketAttach;
+        public event EventHandler OnHideAllSockets;
 
         private void Awake()
         {
@@ -78,6 +79,7 @@ namespace RobotAbuse
                 }
                 
             }
+
             ClearDetectedObject();
             return false;
         }
@@ -161,6 +163,8 @@ namespace RobotAbuse
 
             DetectedGameObject = null;
             StopDragging();
+
+            OnHideAllSockets?.Invoke(this, EventArgs.Empty);
         }
 
         public void DragObject(Vector3 currentMousePosition)
