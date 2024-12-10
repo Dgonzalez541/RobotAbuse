@@ -149,9 +149,8 @@ namespace RobotAbuse
             if (!IsConnectingSocket)//Prevent Multiple connections
             {
                 IsConnectingSocket = true;
-                var onPartSocketEventArgs = e as OnSocketPartsInteractionEventArgs;
+                textLabel.text = "Connected!";
             }
-            textLabel.text = "Connected!";
         }
 
         //Snaps sockets in place
