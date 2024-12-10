@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace RobotAbuse
 {
+    //Movement calculations for the player that have been extracted for testing.
     public class MovementController
     {
         public bool IsMoving;
