@@ -1,33 +1,31 @@
-
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace RobotAbuse
 {
-    [System.Serializable]
-    public class AssetReferenceMaterial : AssetReferenceT<Material>
-    {
-        public AssetReferenceMaterial(string guid) : base(guid) {}
-    }
-
+    /*ViewableObject is the class that represents parts that can be used by the ObjectViewer using IViewableObject. 
+     *Behaviours such as IHighlightable and ISocketable can be added to ViewableObjects.
+     */
     [DisallowMultipleComponent]
     public class ViewableObject : MonoBehaviour, IViewableObject, IHighlightable, ISocketable
     {
+        //IViewableObject
         [field: SerializeField] public GameObject[] AdditonalGameObjects { get; set; }
         Dictionary<GameObject,Material> dictGameObjectMaterial = new Dictionary<GameObject,Material>();
 
-        [SerializeField] AssetReferenceMaterial materialReference;
+        //IHighlightable
         public bool IsHighlighted { get; private set; } = false;
 
-        public PartSocket PartSocket { get { return partSocket; } set { partSocket = value; } }
-        PartSocket partSocket;
-
+        //Implementation details for IHighlightable
+        [SerializeField] AssetReferenceMaterial materialReference;
         Material highlightMaterial;
         Material originalMaterial;
         MeshRenderer meshRenderer;
+
+        //ISocketable
+        public PartSocket PartSocket { get { return partSocket; } set { partSocket = value; } }
+        PartSocket partSocket;
 
         void Awake()
         {
@@ -43,16 +41,6 @@ namespace RobotAbuse
                 dictGameObjectMaterial.Add(go, go.GetComponent<MeshRenderer>().material);
             }
 
-            partSocket = GetComponentInChildren<PartSocket>();
-            if(partSocket != null)
-            {
-                partSocket.OnSocketPartsConnected += PartSocket_OnTriggerEntered;
-            }
-
-        }
-
-        private void PartSocket_OnTriggerEntered(object sender, EventArgs e)
-        {
         }
 
         public void Highlight()
@@ -81,13 +69,12 @@ namespace RobotAbuse
                 
             }
         }
+    }
 
-        private void OnDisable()
-        {
-            if (partSocket != null)
-            {
-                partSocket.OnSocketPartsConnected -= PartSocket_OnTriggerEntered;
-            }
-        }
+    //Class to get Materials from Addressbles
+    [System.Serializable]
+    public class AssetReferenceMaterial : AssetReferenceT<Material>
+    {
+        public AssetReferenceMaterial(string guid) : base(guid) { }
     }
 }
