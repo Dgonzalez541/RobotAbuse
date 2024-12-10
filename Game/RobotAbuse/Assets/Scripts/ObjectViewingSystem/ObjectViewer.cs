@@ -153,7 +153,7 @@ namespace RobotAbuse
                 }
                 var connectingSocketPartTargetPosition = socketable.PartSocket.AttachedPartSocket.transform.position; 
                         
-                detectedVo.transform.position = Vector3.Lerp(currentGrabbedPartSocketPosition, connectingSocketPartTargetPosition, 100f * Time.deltaTime);
+                detectedVo.transform.position = Vector3.Lerp(currentGrabbedPartSocketPosition, connectingSocketPartTargetPosition, 1000f * Time.deltaTime);
 
                 if (detectedVo.transform.position == currentGrabbedPartSocketPosition)
                 {
