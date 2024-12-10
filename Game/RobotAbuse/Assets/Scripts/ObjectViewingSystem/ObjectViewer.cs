@@ -18,7 +18,7 @@ namespace RobotAbuse
     {
         public GameObject DetectedGameObject { get; private set; }
         public IViewableObject DetectedViewableObject { get; private set; }
-        //PartSocket otherPartSocket;
+
         public bool IsDragging { get; private set; } = false;
         public bool IsConnectingSocket { get; private set; } = false;
 
@@ -150,7 +150,6 @@ namespace RobotAbuse
             {
                 IsConnectingSocket = true;
                 var onPartSocketEventArgs = e as OnSocketPartsInteractionEventArgs;
-                //otherPartSocket = onPartSocketEventArgs.OtherPartSocket;
             }
             textLabel.text = "Connected!";
         }
