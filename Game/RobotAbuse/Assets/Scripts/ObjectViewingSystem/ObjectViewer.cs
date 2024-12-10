@@ -11,6 +11,8 @@ namespace RobotAbuse
         public PartSocket OtherPartSocket;
     }
 
+
+    //ObjectViewer implements detection and manipulation interactions for IViewableObjects. 
     [System.Serializable]
     public class ObjectViewer : MonoBehaviour
     {
@@ -37,8 +39,10 @@ namespace RobotAbuse
             {
                 partSocket.ObjectViewer = this;
             }
-
-           
+        }
+        void Update()
+        {
+            HandleSocketConnectionSnap();
         }
 
         public bool DetectObject(Ray ray)
@@ -120,6 +124,29 @@ namespace RobotAbuse
             textLabel.text = "Disconnected!";
         }
 
+        void ClearDetectedObject()
+        {
+            if (IsDragging)
+            {
+                StopDragging();
+            }
+
+            if (DetectedGameObject != null && DetectedGameObject.GetComponent<IHighlightable>() != null)
+            {
+                DetectedGameObject.GetComponent<IHighlightable>().Unhighlight();
+            }
+
+            if (DetectedGameObject != null && DetectedGameObject.GetComponent<ISocketable>() != null && DetectedGameObject.GetComponent<ISocketable>().PartSocket != null)
+            {
+                var detectedPartSocket = DetectedGameObject.GetComponent<ISocketable>().PartSocket;
+                detectedPartSocket.OnSocketPartsConnected -= PartSocket_OnSocketsConnected;
+                OnSocketDetach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = detectedPartSocket, OtherPartSocket = detectedPartSocket.AttachedPartSocket });
+            }
+            OnHideAllSockets?.Invoke(this, EventArgs.Empty);
+            DetectedGameObject = null;
+        }
+
+        //Handle Socket Connections
         private void PartSocket_OnSocketsConnected(object sender, System.EventArgs e)
         {
             if (!IsConnectingSocket)//Prevent Multiple connections
@@ -129,11 +156,6 @@ namespace RobotAbuse
                 otherPartSocket = onPartSocketEventArgs.OtherPartSocket;
             }
             textLabel.text = "Connected!";
-        }
-
-        void Update()
-        {
-            HandleSocketConnectionSnap();
         }
 
         //Snaps sockets in place
@@ -165,28 +187,8 @@ namespace RobotAbuse
             }
         }
 
-        void ClearDetectedObject()
-        {
-            if(IsDragging) 
-            {
-                StopDragging();
-            }
-            
-            if (DetectedGameObject != null && DetectedGameObject.GetComponent<IHighlightable>() != null)
-            {
-                DetectedGameObject.GetComponent<IHighlightable>().Unhighlight();
-            }
-
-            if (DetectedGameObject != null && DetectedGameObject.GetComponent<ISocketable>() != null && DetectedGameObject.GetComponent<ISocketable>().PartSocket != null)
-            {
-                var detectedPartSocket = DetectedGameObject.GetComponent<ISocketable>().PartSocket;
-                detectedPartSocket.OnSocketPartsConnected -= PartSocket_OnSocketsConnected;
-                OnSocketDetach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = detectedPartSocket, OtherPartSocket = detectedPartSocket.AttachedPartSocket });
-            }
-            OnHideAllSockets?.Invoke(this, EventArgs.Empty);
-            DetectedGameObject = null;
-        }
-
+        
+        //Dragging Objects
         public void DragObject(Vector3 currentMousePosition)
         {
             DetectedGameObject.transform.position = currentMousePosition;
