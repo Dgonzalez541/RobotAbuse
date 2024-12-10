@@ -4,4 +4,4 @@ Robot Abuse is a test project for ForgeFX Simulations. It consists of a robot, w
 
 To play, open up the scene, MainScene, and press play. Tests can be run in the Unity Test Runner. 
 
-To move use WASD, and hold the Right Mouse button to look around.
+To move and look around, hold the Right Mouse button and use WASD.
