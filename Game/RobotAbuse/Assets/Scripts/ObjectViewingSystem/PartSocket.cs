@@ -1,17 +1,16 @@
 using System;
-using System.Diagnostics.Tracing;
 using UnityEngine;
-using static Codice.Client.Common.EventTracking.TrackFeatureUseEvent.Features.DesktopGUI.Filters;
 
 namespace RobotAbuse
 {
+    //PartSocket is the class that IViewableObjects can socket into if they implement ISocketable
     [RequireComponent(typeof(SphereCollider))]
     [RequireComponent(typeof(Rigidbody))]
     public class PartSocket : MonoBehaviour
     {
-        public PartSocket AttachedPartSocket { get; private set; }
         public bool IsConnected { get; private set; } = true;
-
+        public PartSocket AttachedPartSocket { get; private set; }
+      
         public IViewableObject SocketOwner { get; private set; }
 
         public ObjectViewer ObjectViewer;
@@ -45,16 +44,15 @@ namespace RobotAbuse
         private void Start()
         {
             ObjectViewer.OnSocketDetach += ObjectViewer_OnSocketDetach;
-            ObjectViewer.OnSocketAttach += ObjectViewer_OnSocketAttach;
             ObjectViewer.OnHideAllSockets += ObjectViewer_OnHideAllSockets;
         }
 
+        //Attach Sockets
         private void OnTriggerEnter(Collider other)
         {
             var vo = ObjectViewer.DetectedViewableObject as ViewableObject;
             if (other.gameObject.GetComponent<PartSocket>() != null && !other.gameObject.GetComponent<PartSocket>().IsConnected && !IsConnected)
             {
-                Debug.Log(gameObject + " is CONN");
                 IsConnected = true;
                 AttachedPartSocket = other.gameObject.GetComponent<PartSocket>();
                 AttachedPartSocket.IsConnected = true;
@@ -63,17 +61,12 @@ namespace RobotAbuse
             }
         }
 
-        private void ObjectViewer_OnSocketAttach(object sender, EventArgs e)
-        {
-            //HideSocket();
-        }
-
+        //Detach Sockets
         private void ObjectViewer_OnSocketDetach(object sender, EventArgs e)
         {
             var eventArgs = e as OnSocketPartsInteractionEventArgs;
             if (IsConnected && eventArgs.GrabbedPartSocket == this)
             {
-                Debug.Log(gameObject + " is DIScon");
                 IsConnected = false;
                 eventArgs.OtherPartSocket.IsConnected = false;
             }
@@ -100,7 +93,6 @@ namespace RobotAbuse
         private void OnDisable()
         {
             ObjectViewer.OnSocketDetach -= ObjectViewer_OnSocketDetach;
-            ObjectViewer.OnSocketAttach -= ObjectViewer_OnSocketAttach;
             ObjectViewer.OnHideAllSockets -= ObjectViewer_OnHideAllSockets;
         }
     }
