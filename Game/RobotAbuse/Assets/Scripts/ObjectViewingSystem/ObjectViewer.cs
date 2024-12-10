@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-
+using TMPro;
 namespace RobotAbuse
 {
     public class OnSocketPartsInteractionEventArgs : EventArgs
@@ -27,6 +27,8 @@ namespace RobotAbuse
         public event EventHandler OnSocketAttach;
         public event EventHandler OnHideAllSockets;
 
+        [SerializeField] public TextMeshProUGUI textLabel;
+
         private void Awake()
         {
             //Init Part Sockets
@@ -35,6 +37,8 @@ namespace RobotAbuse
             {
                 partSocket.ObjectViewer = this;
             }
+
+           
         }
 
         public bool DetectObject(Ray ray)
@@ -112,6 +116,8 @@ namespace RobotAbuse
             }
 
             OnSocketDetach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = socketObject.PartSocket, OtherPartSocket = otherPartSocket});
+
+            textLabel.text = "Disconnected!";
         }
 
         private void PartSocket_OnSocketsConnected(object sender, System.EventArgs e)
@@ -122,7 +128,7 @@ namespace RobotAbuse
                 var onPartSocketEventArgs = e as OnSocketPartsInteractionEventArgs;
                 otherPartSocket = onPartSocketEventArgs.OtherPartSocket;
             }
-
+            textLabel.text = "Connected!";
         }
 
         void Update()
@@ -133,15 +139,20 @@ namespace RobotAbuse
         //Snaps sockets in place
         private void HandleSocketConnectionSnap()
         {
-            if (IsConnectingSocket)
+            if (IsConnectingSocket && DetectedGameObject != null)
             {
                 StopDragging();
 
                 var detectedVo = DetectedViewableObject as ViewableObject;
 
                 var currentGrabbedPartSocketPosition = detectedVo.gameObject.transform.position;
-                var connectingSocketPartTargetPosition = otherPartSocket.gameObject.transform.position;
-
+                ISocketable socketable = null;
+                if (DetectedGameObject != null)
+                {
+                    socketable = DetectedGameObject.GetComponentInParent<ISocketable>();
+                }
+                var connectingSocketPartTargetPosition = socketable.PartSocket.AttachedPartSocket.transform.position; 
+                        
                 detectedVo.transform.position = Vector3.Lerp(currentGrabbedPartSocketPosition, connectingSocketPartTargetPosition, 100f * Time.deltaTime);
 
                 if (detectedVo.transform.position == currentGrabbedPartSocketPosition)
