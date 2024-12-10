@@ -3,16 +3,17 @@ using UnityEngine;
 
 namespace RobotAbuse
 {
-
+    /*PartSocket is the class that IViewable objects that implement ISocketable can socket into.
+    * Sockets require a Spherecollider and a Rigidbody to work. The prefab, PartSocket, implements a sphere with a materials whose opacity is changed to show or hide the socket.
+    */
     [RequireComponent(typeof(SphereCollider))]
     [RequireComponent(typeof(Rigidbody))]
     public class PartSocket : MonoBehaviour
     {
-        public PartSocket AttachedPartSocket { get; private set; }
-        public bool IsConnected { get; private set; } = true;
-
         public IViewableObject SocketOwner { get; private set; }
-
+        public bool IsConnected { get; private set; } = true;
+        public PartSocket AttachedPartSocket { get; private set; }
+        
         public ObjectViewer ObjectViewer;
 
         public event EventHandler OnSocketPartsConnected;
@@ -47,6 +48,7 @@ namespace RobotAbuse
             ObjectViewer.OnHideAllSockets += ObjectViewer_OnHideAllSockets;
         }
 
+        //Triggers when two PartSockets collide.
         private void OnTriggerEnter(Collider other)
         {
             if (other.gameObject.GetComponent<PartSocket>() != null)
