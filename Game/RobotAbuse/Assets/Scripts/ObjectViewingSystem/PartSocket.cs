@@ -57,6 +57,7 @@ namespace RobotAbuse
                 AttachedPartSocket = other.gameObject.GetComponent<PartSocket>();
                 AttachedPartSocket.IsConnected = true;
                 OnSocketPartsConnected?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = this, OtherPartSocket = other.gameObject.GetComponent<PartSocket>() });
+                OnSocketPartsConnected?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = other.gameObject.GetComponent<PartSocket>(), OtherPartSocket = this  });
                 HideSocket();
             }
         }
