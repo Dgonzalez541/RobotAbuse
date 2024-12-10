@@ -1,15 +1,9 @@
 using System;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using TMPro;
 namespace RobotAbuse
 {
-    public class OnSocketPartsInteractionEventArgs : EventArgs
-    {
-        public PartSocket GrabbedPartSocket;
-        public PartSocket OtherPartSocket;
-    }
+    
 
     [System.Serializable]
     public class ObjectViewer : MonoBehaviour
@@ -37,46 +31,43 @@ namespace RobotAbuse
             {
                 partSocket.ObjectViewer = this;
             }
-
-           
         }
 
         public bool DetectObject(Ray ray)
         { 
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
+            if (Physics.Raycast(ray, out hit))//Detect if mouse hovered object is IViewableObject
             {
-                if (DetectedGameObject != null && DetectedGameObject.GetComponent<IHighlightable>() != null)
+                if(DetectedGameObject != hit.transform.gameObject)
                 {
-                    DetectedGameObject.GetComponent<IHighlightable>().Unhighlight();
+                    ClearDetectedObject();
                 }
 
                 DetectedGameObject = hit.transform.gameObject;
 
-                var hitObject = DetectedGameObject.GetComponent<IViewableObject>();
-
-                if (hitObject != null)
+                DetectedViewableObject = DetectedGameObject.GetComponent<IViewableObject>();
+                if (DetectedViewableObject != null)
                 {
-                    DetectedViewableObject = hitObject;
 
                     var highlightableObject = DetectedGameObject.GetComponent<IHighlightable>();
                     if (highlightableObject != null)
                     {
                         highlightableObject.Highlight();
                     }
+
                     return true;
                 }
-                else //Hit a game object without IViewalbe (IViewable additonal game object)
-                {
+                else //Hit an IViewableObject's Additional Mesh
+                {   
                     DetectedGameObject = hit.transform.gameObject;
                     //Find parent with IViewableObject
                     foreach (var go in DetectedGameObject.GetComponentsInParent<Transform>())
                     {
                         if(go.GetComponent<IViewableObject>() != null) 
                         {
-                            ClearDetectedObject();
                             DetectedGameObject = go.gameObject;
                             DetectedViewableObject = go.GetComponent<IViewableObject>();
+
                             var highlightableObject = DetectedGameObject.GetComponent<IHighlightable>();
                             if (highlightableObject != null)
                             {
@@ -178,12 +169,6 @@ namespace RobotAbuse
                 DetectedGameObject.GetComponent<IHighlightable>().Unhighlight();
             }
 
-            /*if (DetectedGameObject != null && DetectedGameObject.GetComponent<ISocketable>() != null && DetectedGameObject.GetComponent<ISocketable>().PartSocket != null)
-            {
-                var detectedPartSocket = DetectedGameObject.GetComponent<ISocketable>().PartSocket;
-                detectedPartSocket.OnSocketPartsConnected -= PartSocket_OnSocketsConnected;
-                OnSocketDetach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = detectedPartSocket, OtherPartSocket = detectedPartSocket.AttachedPartSocket });
-            }*/
             OnHideAllSockets?.Invoke(this, EventArgs.Empty);
             DetectedGameObject = null;
         }
@@ -196,20 +181,21 @@ namespace RobotAbuse
         public void StopDragging()
         {
             IsDragging = false;
-
-
-            
-
         }
 
         public void OnDisable()
         {
-
             if (DetectedGameObject != null && DetectedGameObject.GetComponent<ISocketable>() != null)
             {
                 var socketObject = DetectedGameObject.GetComponent<ISocketable>();
                 socketObject.PartSocket.OnSocketPartsConnected -= PartSocket_OnSocketsConnected;
             }
         }
+    }
+
+    public class OnSocketPartsInteractionEventArgs : EventArgs
+    {
+        public PartSocket GrabbedPartSocket;
+        public PartSocket OtherPartSocket;
     }
 }
