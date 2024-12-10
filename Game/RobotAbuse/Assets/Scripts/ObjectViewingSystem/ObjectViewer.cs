@@ -199,9 +199,10 @@ namespace RobotAbuse
 
         public void OnDisable()
         {
-            var socketObject = DetectedGameObject.GetComponent<ISocketable>();
-            if (socketObject != null)
+
+            if (DetectedGameObject != null && DetectedGameObject.GetComponent<ISocketable>() != null)
             {
+                var socketObject = DetectedGameObject.GetComponent<ISocketable>();
                 socketObject.PartSocket.OnSocketPartsConnected -= PartSocket_OnSocketsConnected;
             }
         }
