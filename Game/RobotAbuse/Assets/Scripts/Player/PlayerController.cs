@@ -1,9 +1,9 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace RobotAbuse
 {
-    //The PlayerController exists to take in input from the Input System and pass it to the appropriate systems, in this case, the ObjectViewer and the MovementController.
     public class PlayerController : MonoBehaviour
     {
         [Header("Movement Speed")]
@@ -16,21 +16,17 @@ namespace RobotAbuse
         private CharacterController characterController;
         private Camera mainCamera;
 
-        //Input System
         PlayerInput playerInput;
         InputAction moveAction;
         InputAction lookAction;
         InputAction fireAction;
         InputAction lookTriggerAction;
 
-        //Behaviors 
         MovementController movement;
+
         ObjectViewer objectViewer;
 
-        //Value for the vertical rotation of the camera when looking
-        private float verticalCameraRotation;
-
-        //Value for the mouse position when dragging objects.
+        private float verticalRotation;
         private Vector3 mousePosition;
 
         private void Awake()
@@ -57,53 +53,35 @@ namespace RobotAbuse
 
         private void Update()
         {
-            HandleMovement();
-            HandleRotation();
-            HandleDragging();
-            HandleObjectSensing();
-        }
-
-        private void HandleMovement()
-        {
             if (movement.IsMoving)
             {
-                var time = Time.deltaTime;
-                var moveInput = moveAction.ReadValue<Vector3>();
-                Vector3 input = movement.Calculate(transform, moveInput, MoveSpeed, time);
-
-                characterController.Move(input);
+                HandleMovement();
+                HandleRotation();
             }
-        }
 
-        private void HandleRotation()
-        {
-            if (movement.IsMoving)
+            if(objectViewer.IsDragging)
             {
-                var lookInput = lookAction.ReadValue<Vector2>();
-                transform.Rotate(0, lookInput.x, 0); //Horizontal Rotation
-
-                verticalCameraRotation = movement.CalculateVerticalRotation(lookInput, verticalCameraRotation, lookSensitivity, upDownRange);
-                mainCamera.transform.localRotation = Quaternion.Euler(verticalCameraRotation, 0, 0);
+                HandleDragging();
             }
-        }
 
-        private void HandleDragging()
-        {
-            if (objectViewer.IsDragging)
+            if(!objectViewer.IsDragging)
             {
-                var inputPosition = Mouse.current.position.value;
-                var pos = mainCamera.ScreenToWorldPoint(new Vector3(inputPosition.x, inputPosition.y, 0) - mousePosition);
-                objectViewer.DragObject(pos);
+                HandleObjectSensing();
             }
+            
         }
 
         private void HandleObjectSensing()
         {
-            if (!objectViewer.IsDragging)
-            {
-                var ray = mainCamera.ScreenPointToRay(Mouse.current.position.value);
-                objectViewer.DetectObject(ray);
-            }
+            var ray = mainCamera.ScreenPointToRay(Mouse.current.position.value);
+            objectViewer.DetectObject(ray);
+        }
+
+        private void HandleDragging()
+        {
+            var inputPosition = Mouse.current.position.value;
+            var pos = mainCamera.ScreenToWorldPoint(new Vector3(inputPosition.x, inputPosition.y, 0) - mousePosition);
+            objectViewer.DragObject(pos);
         }
 
         private void OnLookTrigger(InputAction.CallbackContext context)
@@ -131,5 +109,22 @@ namespace RobotAbuse
             objectViewer.StopDragging();
         }
 
+        private void HandleMovement()
+        {
+            var time = Time.deltaTime;
+            var moveInput = moveAction.ReadValue<Vector3>();
+            Vector3 input = movement.Calculate(transform, moveInput, MoveSpeed, time);
+
+            characterController.Move(input);
         }
+
+        private void HandleRotation()
+        {
+            var lookInput = lookAction.ReadValue<Vector2>();
+            transform.Rotate(0, lookInput.x, 0); //Horizontal Rotation
+
+            verticalRotation = movement.CalculateVerticalRotation(lookInput, verticalRotation, lookSensitivity, upDownRange);
+            mainCamera.transform.localRotation = Quaternion.Euler(verticalRotation, 0, 0); 
+        }
+    }
 }
