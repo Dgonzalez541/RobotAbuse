@@ -7,10 +7,10 @@ namespace RobotAbuse
     public class PlayerController : MonoBehaviour
     {
         [Header("Movement Speed")]
-        [SerializeField] public float MoveSpeed = 300f;
+        [SerializeField] public float MoveSpeed = 1f;
 
         [Header("Look Sensitivity")]
-        [SerializeField] private float lookSensitivity = 1f;
+        [SerializeField] private float lookSensitivity = .1f;
         [SerializeField] private float upDownRange = 80f;
 
         private CharacterController characterController;
