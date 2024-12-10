@@ -17,19 +17,16 @@ namespace RobotAbuse
     public class ObjectViewer : MonoBehaviour
     {
         public GameObject DetectedGameObject { get; private set; }
-
         public IViewableObject DetectedViewableObject { get; private set; }
-
-        PartSocket otherPartSocket; //Cached here until functionality moved out of Update()
+        //PartSocket otherPartSocket;
         public bool IsDragging { get; private set; } = false;
-
         public bool IsConnectingSocket { get; private set; } = false;
+
+        [SerializeField] public TextMeshProUGUI textLabel;
 
         public event EventHandler OnSocketDetach;
         public event EventHandler OnSocketAttach;
         public event EventHandler OnHideAllSockets;
-
-        [SerializeField] public TextMeshProUGUI textLabel;
 
         private void Awake()
         {
@@ -153,7 +150,7 @@ namespace RobotAbuse
             {
                 IsConnectingSocket = true;
                 var onPartSocketEventArgs = e as OnSocketPartsInteractionEventArgs;
-                otherPartSocket = onPartSocketEventArgs.OtherPartSocket;
+                //otherPartSocket = onPartSocketEventArgs.OtherPartSocket;
             }
             textLabel.text = "Connected!";
         }
@@ -161,9 +158,8 @@ namespace RobotAbuse
         //Snaps sockets in place
         private void HandleSocketConnectionSnap()
         {
-            if (IsConnectingSocket && DetectedGameObject != null)
+            if (IsConnectingSocket && DetectedGameObject != null && !IsDragging)
             {
-                StopDragging();
 
                 var detectedVo = DetectedViewableObject as ViewableObject;
 
@@ -180,9 +176,8 @@ namespace RobotAbuse
                 if (detectedVo.transform.position == currentGrabbedPartSocketPosition)
                 {
                     IsConnectingSocket = false;
-                    var sockatableVo = DetectedViewableObject as ISocketable;
 
-                    OnSocketAttach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = sockatableVo.PartSocket, OtherPartSocket = otherPartSocket });
+                    OnSocketAttach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = socketable.PartSocket, OtherPartSocket = socketable.PartSocket.AttachedPartSocket });
                 }
             }
         }
