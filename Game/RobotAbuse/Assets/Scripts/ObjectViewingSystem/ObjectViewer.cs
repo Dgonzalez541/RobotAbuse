@@ -46,9 +46,9 @@ namespace RobotAbuse
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
-                if(DetectedGameObject != null && hit.transform.gameObject != DetectedGameObject)
+                if (DetectedGameObject != null && DetectedGameObject.GetComponent<IHighlightable>() != null)
                 {
-                    ClearDetectedObject();
+                    DetectedGameObject.GetComponent<IHighlightable>().Unhighlight();
                 }
 
                 DetectedGameObject = hit.transform.gameObject;
@@ -178,12 +178,12 @@ namespace RobotAbuse
                 DetectedGameObject.GetComponent<IHighlightable>().Unhighlight();
             }
 
-            if (DetectedGameObject != null && DetectedGameObject.GetComponent<ISocketable>() != null && DetectedGameObject.GetComponent<ISocketable>().PartSocket != null)
+            /*if (DetectedGameObject != null && DetectedGameObject.GetComponent<ISocketable>() != null && DetectedGameObject.GetComponent<ISocketable>().PartSocket != null)
             {
                 var detectedPartSocket = DetectedGameObject.GetComponent<ISocketable>().PartSocket;
                 detectedPartSocket.OnSocketPartsConnected -= PartSocket_OnSocketsConnected;
                 OnSocketDetach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = detectedPartSocket, OtherPartSocket = detectedPartSocket.AttachedPartSocket });
-            }
+            }*/
             OnHideAllSockets?.Invoke(this, EventArgs.Empty);
             DetectedGameObject = null;
         }
@@ -196,6 +196,10 @@ namespace RobotAbuse
         public void StopDragging()
         {
             IsDragging = false;
+
+
+            
+
         }
 
         public void OnDisable()

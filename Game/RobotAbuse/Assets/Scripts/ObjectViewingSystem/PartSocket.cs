@@ -1,5 +1,7 @@
 using System;
+using System.Diagnostics.Tracing;
 using UnityEngine;
+using static Codice.Client.Common.EventTracking.TrackFeatureUseEvent.Features.DesktopGUI.Filters;
 
 namespace RobotAbuse
 {
@@ -50,30 +52,30 @@ namespace RobotAbuse
         private void OnTriggerEnter(Collider other)
         {
             var vo = ObjectViewer.DetectedViewableObject as ViewableObject;
-            if (other.gameObject.GetComponent<PartSocket>() != null && !other.gameObject.GetComponent<PartSocket>().IsConnected)
+            if (other.gameObject.GetComponent<PartSocket>() != null && !other.gameObject.GetComponent<PartSocket>().IsConnected && !IsConnected)
             {
+                Debug.Log(gameObject + " is CONN");
                 IsConnected = true;
                 AttachedPartSocket = other.gameObject.GetComponent<PartSocket>();
+                AttachedPartSocket.IsConnected = true;
                 OnSocketPartsConnected?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = this, OtherPartSocket = other.gameObject.GetComponent<PartSocket>() });
+                HideSocket();
             }
         }
 
         private void ObjectViewer_OnSocketAttach(object sender, EventArgs e)
         {
-            var eventArgs = e as OnSocketPartsInteractionEventArgs;
-            if (IsConnected)
-            {
-                IsConnected = true;
-            }
-
-            HideSocket();
+            //HideSocket();
         }
 
         private void ObjectViewer_OnSocketDetach(object sender, EventArgs e)
         {
-            if (IsConnected)
+            var eventArgs = e as OnSocketPartsInteractionEventArgs;
+            if (IsConnected && eventArgs.GrabbedPartSocket == this)
             {
+                Debug.Log(gameObject + " is DIScon");
                 IsConnected = false;
+                eventArgs.OtherPartSocket.IsConnected = false;
             }
             ShowSocket();
         }
