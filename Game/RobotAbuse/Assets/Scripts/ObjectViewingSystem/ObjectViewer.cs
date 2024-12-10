@@ -74,6 +74,7 @@ namespace RobotAbuse
                     {
                         if(go.GetComponent<IViewableObject>() != null) 
                         {
+                            ClearDetectedObject();
                             DetectedGameObject = go.gameObject;
                             DetectedViewableObject = go.GetComponent<IViewableObject>();
                             var highlightableObject = DetectedGameObject.GetComponent<IHighlightable>();

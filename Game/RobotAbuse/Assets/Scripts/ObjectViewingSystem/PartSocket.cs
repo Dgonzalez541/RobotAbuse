@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace RobotAbuse
 {
-
     [RequireComponent(typeof(SphereCollider))]
     [RequireComponent(typeof(Rigidbody))]
     public class PartSocket : MonoBehaviour
@@ -37,6 +36,7 @@ namespace RobotAbuse
                 {
                     IsConnected = true;
                     AttachedPartSocket = collider.gameObject.GetComponent<PartSocket>();
+                    OnSocketPartsConnected?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = this, OtherPartSocket = AttachedPartSocket });
                 }
             }
         }
@@ -49,18 +49,19 @@ namespace RobotAbuse
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.gameObject.GetComponent<PartSocket>() != null)
+            var vo = ObjectViewer.DetectedViewableObject as ViewableObject;
+            if (other.gameObject.GetComponent<PartSocket>() != null && !other.gameObject.GetComponent<PartSocket>().IsConnected)
             {
                 IsConnected = true;
                 AttachedPartSocket = other.gameObject.GetComponent<PartSocket>();
-                OnSocketPartsConnected?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = this, OtherPartSocket = other.gameObject.GetComponent<PartSocket>() }); ;
+                OnSocketPartsConnected?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = this, OtherPartSocket = other.gameObject.GetComponent<PartSocket>() });
             }
         }
 
         private void ObjectViewer_OnSocketAttach(object sender, EventArgs e)
         {
             var eventArgs = e as OnSocketPartsInteractionEventArgs;
-            if (IsConnected || eventArgs.OtherPartSocket == this)
+            if (IsConnected)
             {
                 IsConnected = true;
             }
@@ -70,8 +71,7 @@ namespace RobotAbuse
 
         private void ObjectViewer_OnSocketDetach(object sender, EventArgs e)
         {
-            var eventArgs = e as OnSocketPartsInteractionEventArgs;
-            if (IsConnected && eventArgs.OtherPartSocket == this)
+            if (IsConnected)
             {
                 IsConnected = false;
             }
