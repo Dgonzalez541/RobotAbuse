@@ -3,8 +3,7 @@ using UnityEngine;
 using TMPro;
 namespace RobotAbuse
 {
-    
-
+    //ObjectViewer is the class that handles the selection and manipulation of objects that implement IViewableObject
     [System.Serializable]
     public class ObjectViewer : MonoBehaviour
     {
@@ -12,7 +11,6 @@ namespace RobotAbuse
 
         public IViewableObject DetectedViewableObject { get; private set; }
 
-        PartSocket otherPartSocket; //Cached here until functionality moved out of Update()
         public bool IsDragging { get; private set; } = false;
 
         public bool IsConnectingSocket { get; private set; } = false;
@@ -21,6 +19,7 @@ namespace RobotAbuse
         public event EventHandler OnSocketAttach;
         public event EventHandler OnHideAllSockets;
 
+        [Header("UI Text Label")]
         [SerializeField] public TextMeshProUGUI textLabel;
 
         private void Awake()
@@ -108,7 +107,6 @@ namespace RobotAbuse
             }
 
             OnSocketDetach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = socketObject.PartSocket, OtherPartSocket = otherPartSocket});
-
             textLabel.text = "Disconnected!";
         }
 
@@ -117,10 +115,9 @@ namespace RobotAbuse
             if (!IsConnectingSocket)//Prevent Multiple connections
             {
                 IsConnectingSocket = true;
-                var onPartSocketEventArgs = e as OnSocketPartsInteractionEventArgs;
-                otherPartSocket = onPartSocketEventArgs.OtherPartSocket;
+                textLabel.text = "Connected!";
             }
-            textLabel.text = "Connected!";
+            
         }
 
         void Update()
@@ -136,23 +133,19 @@ namespace RobotAbuse
                 StopDragging();
 
                 var detectedVo = DetectedViewableObject as ViewableObject;
-
                 var currentGrabbedPartSocketPosition = detectedVo.gameObject.transform.position;
-                ISocketable socketable = null;
-                if (DetectedGameObject != null)
-                {
-                    socketable = DetectedGameObject.GetComponentInParent<ISocketable>();
-                }
-                var connectingSocketPartTargetPosition = socketable.PartSocket.AttachedPartSocket.transform.position; 
-                        
+                var connectingSocketPartTargetPosition = DetectedGameObject.GetComponentInParent<ISocketable>().PartSocket.AttachedPartSocket.transform.position; 
+                
+                //Move Sockets to each other
                 detectedVo.transform.position = Vector3.Lerp(currentGrabbedPartSocketPosition, connectingSocketPartTargetPosition, 1000f * Time.deltaTime);
 
+                //Attach sockets 
                 if (detectedVo.transform.position == currentGrabbedPartSocketPosition)
                 {
                     IsConnectingSocket = false;
                     var sockatableVo = DetectedViewableObject as ISocketable;
 
-                    OnSocketAttach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = sockatableVo.PartSocket, OtherPartSocket = otherPartSocket });
+                    OnSocketAttach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = sockatableVo.PartSocket, OtherPartSocket = sockatableVo.PartSocket.AttachedPartSocket });
                 }
             }
         }
