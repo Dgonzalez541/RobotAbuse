@@ -8,6 +8,9 @@ namespace RobotAbuse
         public bool IsMoving;
         private Vector3 currentInputVector;
         private Vector3 smoothInputVelocity;
+
+        private float vertRot;
+        private float verticalLookVelocity;//empty value for SmoothDamp
         public UnityEngine.Vector3 Calculate(Transform transform, Vector3 moveInput, float speed)
         {
             var input = new Vector3();
@@ -24,7 +27,9 @@ namespace RobotAbuse
         {
             currentVerticalRotation -= lookInput.y * lookSensitivity;
             currentVerticalRotation = Mathf.Clamp(currentVerticalRotation, -clampRange, clampRange);
-            return currentVerticalRotation;
+
+            vertRot = Mathf.SmoothDamp(vertRot, currentVerticalRotation, ref verticalLookVelocity, .1f);
+            return vertRot;
         }
     }
 }

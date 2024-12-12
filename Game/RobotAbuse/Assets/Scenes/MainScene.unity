@@ -1019,7 +1019,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MoveSpeed: 100
-  lookSensitivity: 1
+  lookSensitivity: 100
   upDownRange: 80
 --- !u!114 &1411956905
 MonoBehaviour:
