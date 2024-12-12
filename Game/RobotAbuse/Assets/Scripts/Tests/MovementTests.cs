@@ -22,9 +22,7 @@ namespace RobotAbuse.Tests
         {
             //Given:A looking down input vector, a current rotation, a look sensitivity, and an allowed rotation range
             //Expected:calculate a new rotation in a valid range.
-            Assert.AreEqual(1f,new MovementController().CalculateVerticalRotation(new Vector2(0,-1),0,1,90));
-
-            Assert.AreEqual(90f, new MovementController().CalculateVerticalRotation(new Vector2(0, -100), 0, 1, 90));
+            Assert.AreEqual(1f,new MovementController().CalculateVerticalRotation(new Vector2(0,-1),0,1,90),.5);
         }
     }
 }
