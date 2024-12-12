@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using TMPro;
+using UnityEngine.AddressableAssets;
 namespace RobotAbuse
 {
     //ObjectViewer is the class that handles the selection and manipulation of objects that implement IViewableObject
@@ -22,6 +23,11 @@ namespace RobotAbuse
         [Header("UI Text Label")]
         [SerializeField] public TextMeshProUGUI textLabel;
 
+        [Header("Socket Click Sound")]
+        [SerializeField] AssetReferenceAudioClip assetReferenceAudioClip;
+        AudioSource clickAudioSource;
+        AudioClip clickAudioClip;
+
         private void Awake()
         {
             //Init Part Sockets
@@ -30,6 +36,15 @@ namespace RobotAbuse
             {
                 partSocket.ObjectViewer = this;
             }
+
+            //Get audio clip from Addressables
+            Addressables.LoadAssetsAsync<AudioClip>(assetReferenceAudioClip, (audioClip) =>
+            {
+                clickAudioClip = audioClip;
+            });
+
+            clickAudioSource = GetComponent<AudioSource>();
+            clickAudioSource.clip = clickAudioClip;
         }
 
         public bool DetectObject(Ray ray)
@@ -108,6 +123,7 @@ namespace RobotAbuse
 
             OnSocketDetach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = socketObject.PartSocket, OtherPartSocket = otherPartSocket});
             textLabel.text = "Disconnected!";
+            clickAudioSource.Play(0);
         }
 
         private void PartSocket_OnSocketsConnected(object sender, System.EventArgs e)
@@ -116,6 +132,8 @@ namespace RobotAbuse
             {
                 IsConnectingSocket = true;
                 textLabel.text = "Connected!";
+
+                clickAudioSource.Play(0);
             }
             
         }
@@ -190,5 +208,11 @@ namespace RobotAbuse
     {
         public PartSocket GrabbedPartSocket;
         public PartSocket OtherPartSocket;
+    }
+
+    [System.Serializable]
+    public class AssetReferenceAudioClip : AssetReferenceT<AudioClip>
+    {
+        public AssetReferenceAudioClip(string guid) : base(guid) { }
     }
 }
