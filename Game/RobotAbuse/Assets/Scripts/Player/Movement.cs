@@ -6,15 +6,18 @@ namespace RobotAbuse
     public class MovementController
     {
         public bool IsMoving;
-        public UnityEngine.Vector3 Calculate(Transform transform, Vector3 moveInput, float speed, float time)
+        private Vector3 currentInputVector;
+        private Vector3 smoothInputVelocity;
+        public UnityEngine.Vector3 Calculate(Transform transform, Vector3 moveInput, float speed)
         {
             var input = new Vector3();
             input += transform.forward * moveInput.y;
             input += transform.right * moveInput.x;
             input += transform.up * moveInput.z;
-            input = Vector3.ClampMagnitude(input, 1f);
-            input = input * speed * time;
-            return input;
+            input.Normalize();
+            currentInputVector = Vector3.SmoothDamp(currentInputVector, input * speed, ref smoothInputVelocity, .1f);
+
+            return currentInputVector;
         }
 
         public float CalculateVerticalRotation(Vector2 lookInput, float currentVerticalRotation, float lookSensitivity, float clampRange)

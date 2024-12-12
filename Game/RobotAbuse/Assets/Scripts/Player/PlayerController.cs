@@ -60,15 +60,17 @@ namespace RobotAbuse
             HandleObjectSensing();
         }
 
+        Vector3 currentInputVector;
+        private Vector3 smoothInputVelocity;
+
         private void HandleMovement()
         {
             if (movement.IsMoving)
             {
-                var time = Time.deltaTime;
                 var moveInput = moveAction.ReadValue<Vector3>();
-                Vector3 input = movement.Calculate(transform, moveInput, MoveSpeed, time);
-
-                characterController.Move(input);
+                var moveVector = movement.Calculate(transform, moveInput, MoveSpeed);
+                characterController.Move(moveVector * Time.deltaTime);
+                Debug.Log(moveVector);
             }
         }
 
