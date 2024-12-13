@@ -129,8 +129,8 @@ namespace RobotAbuse
                 otherPartSocket = socketObject.PartSocket.AttachedPartSocket;
             }
 
-            var vieweObjectParents = DetectedGameObject.GetComponentsInParent<IViewableObject>();
-            if(otherPartSocket != null && otherPartSocket.IsConnected && vieweObjectParents.Count() > 1) 
+            //Disconnect if other socket is connected and selected object is not the root.
+            if (otherPartSocket != null && otherPartSocket.IsConnected && DetectedGameObject.GetComponentsInParent<IViewableObject>().Count() > 1) 
             {
                 textLabel.text = "Disconnected!";
                 clickAudioSource.Play(0);
@@ -159,7 +159,6 @@ namespace RobotAbuse
         //Snaps sockets in place
         void HandleSocketConnectionSnap()
         {
-            
             if (IsConnectingSocket && DetectedGameObject != null && DetectedViewableObject != null)
             {
                 StopDragging();
@@ -168,9 +167,7 @@ namespace RobotAbuse
                 var currentGrabbedPartSocketPosition = detectedVo.gameObject.transform.position;
                 var connectingSocketPartTargetPosition = DetectedGameObject.GetComponentInParent<ISocketable>().PartSocket.AttachedPartSocket.transform.position;
 
-                var vieweObjectParents = DetectedGameObject.GetComponentsInParent<IViewableObject>();
-
-                if (vieweObjectParents.Count() > 1)
+                if (DetectedGameObject.GetComponentsInParent<IViewableObject>().Count() > 1) //Check if not root object
                 {
                     //Move Sockets to each other
                     detectedVo.transform.position = Vector3.Lerp(currentGrabbedPartSocketPosition, connectingSocketPartTargetPosition, 1000f * Time.deltaTime);
@@ -183,7 +180,6 @@ namespace RobotAbuse
 
                     OnSocketAttach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = sockatableVo.PartSocket, OtherPartSocket = sockatableVo.PartSocket.AttachedPartSocket });
                 }
-                
             }
         }
 
