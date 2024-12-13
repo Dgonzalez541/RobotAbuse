@@ -46,11 +46,6 @@ namespace RobotAbuse
             ObjectViewer.OnShowAllSockets += ObjectViewer_OnShowAllSockets;
         }
 
-        private void ObjectViewer_OnShowAllSockets(object sender, EventArgs e)
-        {
-            ShowSocket();
-        }
-
         //Attach Sockets
         private void OnTriggerEnter(Collider other)
         {
@@ -88,6 +83,11 @@ namespace RobotAbuse
         {
             var renderer = GetComponent<Renderer>();
             renderer.material.SetFloat("_Opacity", 0f);
+        }
+
+        private void ObjectViewer_OnShowAllSockets(object sender, EventArgs e)
+        {
+            ShowSocket();
         }
 
         private void ObjectViewer_OnHideAllSockets(object sender, EventArgs e)
