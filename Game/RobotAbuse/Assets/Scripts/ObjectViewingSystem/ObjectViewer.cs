@@ -9,9 +9,9 @@ namespace RobotAbuse
     [System.Serializable]
     public class ObjectViewer : MonoBehaviour
     {
-        public GameObject DetectedGameObject { get; private set; }
+        public GameObject SelectedGameObject { get; private set; }
 
-        public IViewableObject DetectedViewableObject { get; private set; }
+        public IViewableObject SelectedViewableObject { get; private set; }
 
         public bool IsDragging { get; private set; } = false;
 
@@ -54,49 +54,31 @@ namespace RobotAbuse
             playerController.OnFireCanceledEvent += PlayerController_OnFireCanceledEvent;
         }
 
-
-
         public bool DetectObject(Ray ray)
         { 
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))//Detect if mouse hovered object is IViewableObject
             {
-                if(DetectedGameObject != hit.transform.gameObject)
+                if(SelectedGameObject != hit.transform.gameObject)
                 {
                     ClearDetectedObject();
                 }
 
-                DetectedGameObject = hit.transform.gameObject;
-
-                DetectedViewableObject = DetectedGameObject.GetComponent<IViewableObject>();
-                if (DetectedViewableObject != null)
+                SelectedGameObject = hit.transform.gameObject;
+                if (SelectedGameObject.GetComponent<IViewableObject>() != null)
                 {
-
-                    var highlightableObject = DetectedGameObject.GetComponent<IHighlightable>();
-                    if (highlightableObject != null)
-                    {
-                        highlightableObject.Highlight();
-                    }
-
+                    SetSelectedObject(SelectedGameObject.transform);
                     return true;
                 }
-                else //Hit an IViewableObject's Additional Mesh
+                else //Hit an IViewableObject's Additional Mesh, but not the IViewableObject itself.
                 {   
-                    DetectedGameObject = hit.transform.gameObject;
+                    SelectedGameObject = hit.transform.gameObject;
                     //Find parent with IViewableObject
-                    foreach (var go in DetectedGameObject.GetComponentsInParent<Transform>())
+                    foreach (var go in SelectedGameObject.GetComponentsInParent<Transform>())
                     {
-                        if(go.GetComponent<IViewableObject>() != null) 
+                        if(go.GetComponent<IViewableObject>() != null)
                         {
-                            DetectedGameObject = go.gameObject;
-                            DetectedViewableObject = go.GetComponent<IViewableObject>();
-
-                            var highlightableObject = DetectedGameObject.GetComponent<IHighlightable>();
-                            if (highlightableObject != null)
-                            {
-                                highlightableObject.Highlight();
-                            }
-
+                            SetSelectedObject(go);
                             return true;
                         }
                     }
@@ -107,13 +89,26 @@ namespace RobotAbuse
             return false;
         }
 
+        private void SetSelectedObject(Transform detectedTransform)
+        {
+            //Set detected objects
+            SelectedGameObject = detectedTransform.gameObject;
+            SelectedViewableObject = detectedTransform.GetComponent<IViewableObject>();
+
+            var highlightableObject = SelectedGameObject.GetComponent<IHighlightable>();
+            if (highlightableObject != null)
+            {
+                highlightableObject.Highlight();
+            }
+        }
+
         public void OnObjectSelection()
         {
             //Start dragging object
             IsDragging = true;
 
             //Handle Highlighting
-            var detectedVO = DetectedViewableObject as ViewableObject;
+            var detectedVO = SelectedViewableObject as ViewableObject;
             detectedVO.GetComponent<IHighlightable>().Highlight();
 
             //Handle Sockets
@@ -130,7 +125,7 @@ namespace RobotAbuse
             }
 
             //Disconnect if other socket is connected and selected object is not the root.
-            if (otherPartSocket != null && otherPartSocket.IsConnected && DetectedGameObject.GetComponentsInParent<IViewableObject>().Count() > 1) 
+            if (otherPartSocket != null && otherPartSocket.IsConnected && SelectedGameObject.GetComponentsInParent<IViewableObject>().Count() > 1) 
             {
                 textLabel.text = "Disconnected!";
                 clickAudioSource.Play(0);
@@ -159,15 +154,15 @@ namespace RobotAbuse
         //Snaps sockets in place
         void HandleSocketConnectionSnap()
         {
-            if (IsConnectingSocket && DetectedGameObject != null && DetectedViewableObject != null)
+            if (IsConnectingSocket && SelectedGameObject != null && SelectedViewableObject != null)
             {
                 StopDragging();
 
-                var detectedVo = DetectedViewableObject as ViewableObject;
+                var detectedVo = SelectedViewableObject as ViewableObject;
                 var currentGrabbedPartSocketPosition = detectedVo.gameObject.transform.position;
-                var connectingSocketPartTargetPosition = DetectedGameObject.GetComponentInParent<ISocketable>().PartSocket.AttachedPartSocket.transform.position;
+                var connectingSocketPartTargetPosition = SelectedGameObject.GetComponentInParent<ISocketable>().PartSocket.AttachedPartSocket.transform.position;
 
-                if (DetectedGameObject.GetComponentsInParent<IViewableObject>().Count() > 1) //Check if not root object
+                if (SelectedGameObject.GetComponentsInParent<IViewableObject>().Count() > 1) //Check if not root object
                 {
                     //Move Sockets to each other
                     detectedVo.transform.position = Vector3.Lerp(currentGrabbedPartSocketPosition, connectingSocketPartTargetPosition, 1000f * Time.deltaTime);
@@ -176,7 +171,7 @@ namespace RobotAbuse
                 if (detectedVo.transform.position == currentGrabbedPartSocketPosition)
                 {
                     IsConnectingSocket = false;
-                    var sockatableVo = DetectedViewableObject as ISocketable;
+                    var sockatableVo = SelectedViewableObject as ISocketable;
 
                     OnSocketAttach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = sockatableVo.PartSocket, OtherPartSocket = sockatableVo.PartSocket.AttachedPartSocket });
                 }
@@ -190,19 +185,19 @@ namespace RobotAbuse
                 StopDragging();
             }
             
-            if (DetectedGameObject != null && DetectedGameObject.GetComponent<IHighlightable>() != null)
+            if (SelectedGameObject != null && SelectedGameObject.GetComponent<IHighlightable>() != null)
             {
-                DetectedGameObject.GetComponent<IHighlightable>().Unhighlight();
+                SelectedGameObject.GetComponent<IHighlightable>().Unhighlight();
             }
 
             OnHideAllSockets?.Invoke(this, EventArgs.Empty);
-            DetectedGameObject = null;
-            DetectedViewableObject = null;
+            SelectedGameObject = null;
+            SelectedViewableObject = null;
         }
 
         public void DragObject(Vector3 currentMousePosition)
         {
-            DetectedGameObject.transform.position = currentMousePosition;
+            SelectedGameObject.transform.position = currentMousePosition;
         }
 
         void PlayerController_OnFireCanceledEvent(object sender, EventArgs e)
@@ -218,9 +213,9 @@ namespace RobotAbuse
 
         void OnDisable()
         {
-            if (DetectedGameObject != null && DetectedGameObject.GetComponent<ISocketable>() != null)
+            if (SelectedGameObject != null && SelectedGameObject.GetComponent<ISocketable>() != null)
             {
-                var socketObject = DetectedGameObject.GetComponent<ISocketable>();
+                var socketObject = SelectedGameObject.GetComponent<ISocketable>();
                 socketObject.PartSocket.OnSocketPartsConnected -= PartSocket_OnSocketsConnected;
             }
 
