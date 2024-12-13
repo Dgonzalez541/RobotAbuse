@@ -9,9 +9,6 @@ namespace RobotAbuse
     [DisallowMultipleComponent]
     public class ViewableObject : ViewableObjectBase, IHighlightable, ISocketable
     {
-        //IViewableObject
-        
-
         //IHighlightable
         public bool IsHighlighted { get; private set; } = false;
 
