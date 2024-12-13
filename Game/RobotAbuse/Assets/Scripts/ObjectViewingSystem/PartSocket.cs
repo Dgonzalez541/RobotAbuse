@@ -10,11 +10,8 @@ namespace RobotAbuse
     {
         public bool IsConnected { get; private set; } = true;
         public PartSocket AttachedPartSocket { get; private set; }
-      
         public IViewableObject SocketOwner { get; private set; }
-
         public ObjectViewer ObjectViewer;
-
         public event EventHandler OnSocketPartsConnected;
 
         void Awake()
@@ -119,7 +116,7 @@ namespace RobotAbuse
         {
             HideSocket();
         }
-
+        
         void OnDisable()
         {
             ObjectViewer.OnSocketDetach -= ObjectViewer_OnSocketDetach;

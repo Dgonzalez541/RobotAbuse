@@ -129,7 +129,6 @@ namespace RobotAbuse
                     mousePosition = new Vector3(inputPosition.x, inputPosition.y, 0) - mainCamera.WorldToScreenPoint(objectViewer.SelectedGameObject.transform.position);
                 }
             }
-            
         }
         void OnFireCanceled(InputAction.CallbackContext context)
         {
