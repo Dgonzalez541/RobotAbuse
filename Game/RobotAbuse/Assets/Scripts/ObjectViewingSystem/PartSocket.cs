@@ -72,7 +72,7 @@ namespace RobotAbuse
         private void ObjectViewer_OnSocketDetach(object sender, EventArgs e)
         {
             var eventArgs = e as OnSocketPartsInteractionEventArgs;
-            if (IsConnected && eventArgs.GrabbedPartSocket == this)
+            if (IsConnected && eventArgs.GrabbedPartSocket == this && eventArgs.OtherPartSocket.IsConnected)
             {
                 IsConnected = false;
                 eventArgs.OtherPartSocket.IsConnected = false;
