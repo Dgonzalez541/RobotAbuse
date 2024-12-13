@@ -159,7 +159,8 @@ namespace RobotAbuse
         //Snaps sockets in place
         void HandleSocketConnectionSnap()
         {
-            if (IsConnectingSocket && DetectedGameObject != null && DetectedViewableObject != null && DetectedGameObject.GetComponentInParent<ISocketable>() != null)
+            
+            if (IsConnectingSocket && DetectedGameObject != null && DetectedViewableObject != null)
             {
                 StopDragging();
 
@@ -167,9 +168,13 @@ namespace RobotAbuse
                 var currentGrabbedPartSocketPosition = detectedVo.gameObject.transform.position;
                 var connectingSocketPartTargetPosition = DetectedGameObject.GetComponentInParent<ISocketable>().PartSocket.AttachedPartSocket.transform.position;
 
-                //Move Sockets to each other
-                detectedVo.transform.position = Vector3.Lerp(currentGrabbedPartSocketPosition, connectingSocketPartTargetPosition, 1000f * Time.deltaTime);
+                var vieweObjectParents = DetectedGameObject.GetComponentsInParent<IViewableObject>();
 
+                if (vieweObjectParents.Count() > 1)
+                {
+                    //Move Sockets to each other
+                    detectedVo.transform.position = Vector3.Lerp(currentGrabbedPartSocketPosition, connectingSocketPartTargetPosition, 1000f * Time.deltaTime);
+                }
                 //Attach sockets 
                 if (detectedVo.transform.position == currentGrabbedPartSocketPosition)
                 {
