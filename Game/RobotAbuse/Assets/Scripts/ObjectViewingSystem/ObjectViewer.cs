@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using TMPro;
 using UnityEngine.AddressableAssets;
+using System.Linq;
 namespace RobotAbuse
 {
     //ObjectViewer is the class that handles the selection and manipulation of objects that implement IViewableObject
@@ -128,7 +129,8 @@ namespace RobotAbuse
                 otherPartSocket = socketObject.PartSocket.AttachedPartSocket;
             }
 
-            if(otherPartSocket != null && otherPartSocket.IsConnected) 
+            var vieweObjectParents = DetectedGameObject.GetComponentsInParent<IViewableObject>();
+            if(otherPartSocket != null && otherPartSocket.IsConnected && vieweObjectParents.Count() > 1) 
             {
                 textLabel.text = "Disconnected!";
                 clickAudioSource.Play(0);
@@ -157,14 +159,14 @@ namespace RobotAbuse
         //Snaps sockets in place
         void HandleSocketConnectionSnap()
         {
-            if (IsConnectingSocket && DetectedGameObject != null)
+            if (IsConnectingSocket && DetectedGameObject != null && DetectedViewableObject != null && DetectedGameObject.GetComponentInParent<ISocketable>() != null)
             {
                 StopDragging();
 
                 var detectedVo = DetectedViewableObject as ViewableObject;
                 var currentGrabbedPartSocketPosition = detectedVo.gameObject.transform.position;
-                var connectingSocketPartTargetPosition = DetectedGameObject.GetComponentInParent<ISocketable>().PartSocket.AttachedPartSocket.transform.position; 
-                
+                var connectingSocketPartTargetPosition = DetectedGameObject.GetComponentInParent<ISocketable>().PartSocket.AttachedPartSocket.transform.position;
+
                 //Move Sockets to each other
                 detectedVo.transform.position = Vector3.Lerp(currentGrabbedPartSocketPosition, connectingSocketPartTargetPosition, 1000f * Time.deltaTime);
 
@@ -176,6 +178,7 @@ namespace RobotAbuse
 
                     OnSocketAttach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = sockatableVo.PartSocket, OtherPartSocket = sockatableVo.PartSocket.AttachedPartSocket });
                 }
+                
             }
         }
 
@@ -193,6 +196,7 @@ namespace RobotAbuse
 
             OnHideAllSockets?.Invoke(this, EventArgs.Empty);
             DetectedGameObject = null;
+            DetectedViewableObject = null;
         }
 
         public void DragObject(Vector3 currentMousePosition)
