@@ -156,7 +156,7 @@ namespace RobotAbuse
         {
             if (IsConnectingSocket && SelectedGameObject != null && SelectedViewableObject != null)
             {
-                StopDragging();
+                StopDraggingObject();
 
                 var detectedVo = SelectedViewableObject as ViewableObject;
                 var currentGrabbedPartSocketPosition = detectedVo.gameObject.transform.position;
@@ -182,7 +182,7 @@ namespace RobotAbuse
         {
             if(IsDragging) 
             {
-                StopDragging();
+                StopDraggingObject();
             }
             
             if (SelectedGameObject != null && SelectedGameObject.GetComponent<IHighlightable>() != null)
@@ -200,15 +200,15 @@ namespace RobotAbuse
             SelectedGameObject.transform.position = currentMousePosition;
         }
 
+        void StopDraggingObject()
+        {
+            IsDragging = false;
+        }
+
         void PlayerController_OnFireCanceledEvent(object sender, EventArgs e)
         {
             OnCheckSocketConnection?.Invoke(this, EventArgs.Empty);
-            StopDragging();
-        }
-
-        void StopDragging()
-        {
-            IsDragging = false;
+            StopDraggingObject();
         }
 
         void OnDisable()
