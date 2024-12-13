@@ -29,7 +29,9 @@ namespace RobotAbuse
         AudioSource clickAudioSource;
         AudioClip clickAudioClip;
 
-        private void Awake()
+        PlayerController playerController;
+        
+        void Awake()
         {
             //Init Part Sockets
             var partSockets = FindObjectsOfType<PartSocket>();
@@ -46,8 +48,11 @@ namespace RobotAbuse
                 clickAudioSource.clip = clickAudioClip;
             });
 
-            
+            playerController = GetComponent<PlayerController>();
+            playerController.OnFireCanceledEvent += PlayerController_OnFireCanceledEvent;
         }
+
+
 
         public bool DetectObject(Ray ray)
         { 
@@ -134,7 +139,7 @@ namespace RobotAbuse
             
         }
 
-        private void PartSocket_OnSocketsConnected(object sender, System.EventArgs e)
+        void PartSocket_OnSocketsConnected(object sender, System.EventArgs e)
         {
             if (!IsConnectingSocket)//Prevent Multiple connections
             {
@@ -152,7 +157,7 @@ namespace RobotAbuse
         }
 
         //Snaps sockets in place
-        private void HandleSocketConnectionSnap()
+        void HandleSocketConnectionSnap()
         {
             if (IsConnectingSocket && DetectedGameObject != null)
             {
@@ -197,18 +202,25 @@ namespace RobotAbuse
             DetectedGameObject.transform.position = currentMousePosition;
         }
 
-        public void StopDragging()
+        void PlayerController_OnFireCanceledEvent(object sender, EventArgs e)
+        {
+            StopDragging();
+        }
+
+        void StopDragging()
         {
             IsDragging = false;
         }
 
-        public void OnDisable()
+        void OnDisable()
         {
             if (DetectedGameObject != null && DetectedGameObject.GetComponent<ISocketable>() != null)
             {
                 var socketObject = DetectedGameObject.GetComponent<ISocketable>();
                 socketObject.PartSocket.OnSocketPartsConnected -= PartSocket_OnSocketsConnected;
             }
+
+            playerController.OnFireCanceledEvent -= PlayerController_OnFireCanceledEvent;
         }
     }
 

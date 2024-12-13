@@ -1,8 +1,10 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace RobotAbuse
 {
+    [RequireComponent(typeof(ObjectViewer))]
     //PlayerController takes in inputs from the Input System and passes them along to behaviours such as movement and Object viewing.
     public class PlayerController : MonoBehaviour
     {
@@ -25,10 +27,11 @@ namespace RobotAbuse
         //Behaviours
         MovementController movement;
         ObjectViewer objectViewer;
-
         
         private float verticalRotation;//Used for camera looking.
         private Vector3 mousePosition;//Used for object dragging.
+
+        public event EventHandler OnFireCanceledEvent;
 
         private void Awake()
         {
@@ -42,7 +45,7 @@ namespace RobotAbuse
             lookTriggerAction = playerInput.actions["LookTrigger"];
 
             fireAction.performed += OnFire;
-            fireAction.canceled += OnFireCancled;
+            fireAction.canceled += OnFireCanceled;
 
             lookTriggerAction.started += OnLookTrigger;
             lookTriggerAction.canceled += OnLookTriggerCancled;
@@ -129,9 +132,9 @@ namespace RobotAbuse
             }
             
         }
-        private void OnFireCancled(InputAction.CallbackContext context)
+        private void OnFireCanceled(InputAction.CallbackContext context)
         {
-            objectViewer.StopDragging();
+            OnFireCanceledEvent?.Invoke(this, EventArgs.Empty);
         }
     }
 }
