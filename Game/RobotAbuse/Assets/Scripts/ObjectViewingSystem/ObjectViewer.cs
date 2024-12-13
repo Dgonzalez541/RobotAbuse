@@ -149,7 +149,6 @@ namespace RobotAbuse
 
                 clickAudioSource.Play(0);
             }
-            
         }
 
         void Update()
@@ -205,7 +204,6 @@ namespace RobotAbuse
 
         void PlayerController_OnFireCanceledEvent(object sender, EventArgs e)
         {
-
             OnCheckSocketConnection?.Invoke(this, EventArgs.Empty);
             StopDragging();
         }

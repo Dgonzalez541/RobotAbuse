@@ -73,7 +73,6 @@ namespace RobotAbuse
                 var moveInput = moveAction.ReadValue<Vector3>();
                 var moveVector = movement.Calculate(transform, moveInput, MoveSpeed);
                 characterController.Move(moveVector * Time.deltaTime);
-                Debug.Log(moveVector);
             }
         }
 
