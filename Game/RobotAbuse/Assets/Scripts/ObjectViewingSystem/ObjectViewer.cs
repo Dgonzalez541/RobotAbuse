@@ -19,6 +19,7 @@ namespace RobotAbuse
         public event EventHandler OnSocketDetach;
         public event EventHandler OnSocketAttach;
         public event EventHandler OnHideAllSockets;
+        public event EventHandler OnShowAllSockets;
 
         [Header("UI Text Label")]
         [SerializeField] public TextMeshProUGUI textLabel;
@@ -41,10 +42,11 @@ namespace RobotAbuse
             Addressables.LoadAssetsAsync<AudioClip>(assetReferenceAudioClip, (audioClip) =>
             {
                 clickAudioClip = audioClip;
+                clickAudioSource = GetComponent<AudioSource>();
+                clickAudioSource.clip = clickAudioClip;
             });
 
-            clickAudioSource = GetComponent<AudioSource>();
-            clickAudioSource.clip = clickAudioClip;
+            
         }
 
         public bool DetectObject(Ray ray)
@@ -121,9 +123,15 @@ namespace RobotAbuse
                 otherPartSocket = socketObject.PartSocket.AttachedPartSocket;
             }
 
-            OnSocketDetach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = socketObject.PartSocket, OtherPartSocket = otherPartSocket});
-            textLabel.text = "Disconnected!";
-            clickAudioSource.Play(0);
+            if(otherPartSocket != null && otherPartSocket.IsConnected) 
+            {
+                textLabel.text = "Disconnected!";
+                clickAudioSource.Play(0);
+                OnSocketDetach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = socketObject.PartSocket, OtherPartSocket = otherPartSocket });
+            }
+
+            OnShowAllSockets?.Invoke(this, EventArgs.Empty);
+            
         }
 
         private void PartSocket_OnSocketsConnected(object sender, System.EventArgs e)

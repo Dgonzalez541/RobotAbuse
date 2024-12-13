@@ -45,6 +45,12 @@ namespace RobotAbuse
         {
             ObjectViewer.OnSocketDetach += ObjectViewer_OnSocketDetach;
             ObjectViewer.OnHideAllSockets += ObjectViewer_OnHideAllSockets;
+            ObjectViewer.OnShowAllSockets += ObjectViewer_OnShowAllSockets;
+        }
+
+        private void ObjectViewer_OnShowAllSockets(object sender, EventArgs e)
+        {
+            ShowSocket();
         }
 
         //Attach Sockets
