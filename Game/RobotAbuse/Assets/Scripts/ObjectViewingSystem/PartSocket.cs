@@ -99,6 +99,7 @@ namespace RobotAbuse
         {
             ObjectViewer.OnSocketDetach -= ObjectViewer_OnSocketDetach;
             ObjectViewer.OnHideAllSockets -= ObjectViewer_OnHideAllSockets;
+            ObjectViewer.OnShowAllSockets -= ObjectViewer_OnShowAllSockets;
         }
     }
 }
