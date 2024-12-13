@@ -26,9 +26,8 @@ namespace RobotAbuse
         public float CalculateVerticalRotation(Vector2 lookInput, float currentVerticalRotation, float lookSensitivity, float clampRange)
         {
             currentVerticalRotation -= lookInput.y * lookSensitivity;
-            currentVerticalRotation = Mathf.Clamp(currentVerticalRotation, -clampRange, clampRange);
+            var vertRot= Mathf.Clamp(currentVerticalRotation, -clampRange, clampRange);
 
-            vertRot = Mathf.SmoothDamp(vertRot, currentVerticalRotation, ref verticalLookVelocity, .1f);
             return vertRot;
         }
     }
