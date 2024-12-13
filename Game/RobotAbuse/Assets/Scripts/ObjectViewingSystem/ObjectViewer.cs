@@ -101,7 +101,7 @@ namespace RobotAbuse
             return false;
         }
 
-        public void OnObjectDetected()
+        public void OnObjectSelection()
         {
             //Start dragging object
             IsDragging = true;

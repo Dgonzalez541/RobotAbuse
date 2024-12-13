@@ -120,7 +120,7 @@ namespace RobotAbuse
             var inputPosition = Mouse.current.position.value;
             if(objectViewer.DetectedGameObject != null && !objectViewer.IsDragging) 
             {
-                objectViewer.OnObjectDetected();
+                objectViewer.OnObjectSelection();
 
                 if(objectViewer.IsDragging)
                 {
