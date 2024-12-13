@@ -7,10 +7,10 @@ namespace RobotAbuse
     //ViewableObject implements IViewableObject to be useable by ObejctViewer.
     //ViewableObject can add interactions and features by implenting IHighlightable and ISocketable
     [DisallowMultipleComponent]
-    public class ViewableObject : MonoBehaviour, IViewableObject, IHighlightable, ISocketable
+    public class ViewableObject : ViewableObjectBase, IHighlightable, ISocketable
     {
         //IViewableObject
-        [field: SerializeField] public GameObject[] AdditonalGameObjects { get; set; }
+        
 
         //IHighlightable
         public bool IsHighlighted { get; private set; } = false;
