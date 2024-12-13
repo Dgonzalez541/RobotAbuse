@@ -20,6 +20,7 @@ namespace RobotAbuse
         public event EventHandler OnSocketAttach;
         public event EventHandler OnHideAllSockets;
         public event EventHandler OnShowAllSockets;
+        public event EventHandler OnCheckSocketConnection;
 
         [Header("UI Text Label")]
         [SerializeField] public TextMeshProUGUI textLabel;
@@ -204,6 +205,8 @@ namespace RobotAbuse
 
         void PlayerController_OnFireCanceledEvent(object sender, EventArgs e)
         {
+
+            OnCheckSocketConnection?.Invoke(this, EventArgs.Empty);
             StopDragging();
         }
 

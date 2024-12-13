@@ -22,41 +22,66 @@ namespace RobotAbuse
             //Ensure collider and Rigidbody work properly
             GetComponent<SphereCollider>().isTrigger = true;
             GetComponent<Rigidbody>().useGravity = false;
+            HideSocket();
+            
+        }
+        void Start()
+        {
+            //Anything needing the ObjectViewer needs to be done in Start() to ensure ObjectViewer is setup before needing it.
+            ObjectViewer.OnSocketDetach += ObjectViewer_OnSocketDetach;
+            ObjectViewer.OnHideAllSockets += ObjectViewer_OnHideAllSockets;
+            ObjectViewer.OnShowAllSockets += ObjectViewer_OnShowAllSockets;
+            ObjectViewer.OnCheckSocketConnection += ObjectViewer_OnCheckSocketConnection;
 
             SocketOwner = GetComponentInParent<IViewableObject>();
-
-            HideSocket();
 
             //Find already attached sockets at start
             var colliders = Physics.OverlapSphere(transform.position, GetComponent<SphereCollider>().radius);
             foreach (var collider in colliders)
             {
-                if(collider.gameObject.GetComponent<PartSocket>() != null && collider.gameObject.GetComponent<PartSocket>() != this)
+                if (collider.gameObject.GetComponent<PartSocket>() != null && collider.gameObject.GetComponent<PartSocket>() != this)
                 {
-                    IsConnected = true;
-                    AttachedPartSocket = collider.gameObject.GetComponent<PartSocket>();
-                    OnSocketPartsConnected?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = this, OtherPartSocket = AttachedPartSocket });
+                    var attachedPartSocket = collider.gameObject.GetComponent<PartSocket>();
+                    SetSocketConnection(attachedPartSocket);
                 }
             }
         }
-        void Start()
+
+        void ObjectViewer_OnCheckSocketConnection(object sender, EventArgs e)
         {
-            ObjectViewer.OnSocketDetach += ObjectViewer_OnSocketDetach;
-            ObjectViewer.OnHideAllSockets += ObjectViewer_OnHideAllSockets;
-            ObjectViewer.OnShowAllSockets += ObjectViewer_OnShowAllSockets;
+            //Find already attached sockets at start
+            var colliders = Physics.OverlapSphere(transform.position, GetComponent<SphereCollider>().radius);
+            foreach (var collider in colliders)
+            {
+                if (!IsConnected 
+                    && collider.gameObject.GetComponent<PartSocket>() != null 
+                    && collider.gameObject.GetComponent<PartSocket>() != this 
+                    && !collider.gameObject.GetComponent<PartSocket>().IsConnected)
+                {
+                    var attachedPartSocket = collider.gameObject.GetComponent<PartSocket>();
+                    SetSocketConnection(attachedPartSocket);
+                }
+            }
+        }
+
+        void SetSocketConnection(PartSocket newAttachedPartSocket)
+        {
+            IsConnected = true;
+            AttachedPartSocket = newAttachedPartSocket;
+            AttachedPartSocket.IsConnected = true;
+            OnSocketPartsConnected?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = this, OtherPartSocket = AttachedPartSocket });
+            OnSocketPartsConnected?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = AttachedPartSocket, OtherPartSocket = this });
         }
 
         //Attach Sockets
         void OnTriggerEnter(Collider other)
         {
-            var vo = ObjectViewer.DetectedViewableObject as ViewableObject;
-            if (other.gameObject.GetComponent<PartSocket>() != null && !other.gameObject.GetComponent<PartSocket>().IsConnected && !IsConnected)
+            if (!IsConnected 
+                && other.gameObject.GetComponent<PartSocket>() != null 
+                && !other.gameObject.GetComponent<PartSocket>().IsConnected)
             {
-                IsConnected = true;
-                AttachedPartSocket = other.gameObject.GetComponent<PartSocket>();
-                AttachedPartSocket.IsConnected = true;
-                OnSocketPartsConnected?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = this, OtherPartSocket = other.gameObject.GetComponent<PartSocket>() });
-                OnSocketPartsConnected?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = other.gameObject.GetComponent<PartSocket>(), OtherPartSocket = this  });
+                var attachedPartSocket = other.gameObject.GetComponent<PartSocket>();
+                SetSocketConnection(attachedPartSocket);
                 HideSocket();
             }
         }
