@@ -17,7 +17,7 @@ namespace RobotAbuse
 
         public event EventHandler OnSocketPartsConnected;
 
-        private void Awake()
+        void Awake()
         {
             //Ensure collider and Rigidbody work properly
             GetComponent<SphereCollider>().isTrigger = true;
@@ -39,7 +39,7 @@ namespace RobotAbuse
                 }
             }
         }
-        private void Start()
+        void Start()
         {
             ObjectViewer.OnSocketDetach += ObjectViewer_OnSocketDetach;
             ObjectViewer.OnHideAllSockets += ObjectViewer_OnHideAllSockets;
@@ -47,7 +47,7 @@ namespace RobotAbuse
         }
 
         //Attach Sockets
-        private void OnTriggerEnter(Collider other)
+        void OnTriggerEnter(Collider other)
         {
             var vo = ObjectViewer.DetectedViewableObject as ViewableObject;
             if (other.gameObject.GetComponent<PartSocket>() != null && !other.gameObject.GetComponent<PartSocket>().IsConnected && !IsConnected)
@@ -62,7 +62,7 @@ namespace RobotAbuse
         }
 
         //Detach Sockets
-        private void ObjectViewer_OnSocketDetach(object sender, EventArgs e)
+        void ObjectViewer_OnSocketDetach(object sender, EventArgs e)
         {
             var eventArgs = e as OnSocketPartsInteractionEventArgs;
             if (IsConnected && eventArgs.GrabbedPartSocket == this &&  eventArgs.OtherPartSocket.IsConnected)
@@ -73,29 +73,29 @@ namespace RobotAbuse
             ShowSocket();
         }
 
-        private void ShowSocket()
+        void ShowSocket()
         {
             var renderer = GetComponent<Renderer>();
             renderer.material.SetFloat("_Opacity", .5f);
         }
 
-        private void HideSocket()
+        void HideSocket()
         {
             var renderer = GetComponent<Renderer>();
             renderer.material.SetFloat("_Opacity", 0f);
         }
 
-        private void ObjectViewer_OnShowAllSockets(object sender, EventArgs e)
+        void ObjectViewer_OnShowAllSockets(object sender, EventArgs e)
         {
             ShowSocket();
         }
 
-        private void ObjectViewer_OnHideAllSockets(object sender, EventArgs e)
+        void ObjectViewer_OnHideAllSockets(object sender, EventArgs e)
         {
             HideSocket();
         }
 
-        private void OnDisable()
+        void OnDisable()
         {
             ObjectViewer.OnSocketDetach -= ObjectViewer_OnSocketDetach;
             ObjectViewer.OnHideAllSockets -= ObjectViewer_OnHideAllSockets;

@@ -12,11 +12,11 @@ namespace RobotAbuse
         [SerializeField] public float MoveSpeed = 1f;
 
         [Header("Look Sensitivity")]
-        [SerializeField] private float lookSensitivity = .1f;
-        [SerializeField] private float upDownRange = 80f;
+        [SerializeField] float lookSensitivity = .1f;
+        [SerializeField] float upDownRange = 80f;
 
-        private CharacterController characterController;
-        private Camera mainCamera;
+        CharacterController characterController;
+        Camera mainCamera;
 
         PlayerInput playerInput;
         InputAction moveAction;
@@ -28,12 +28,12 @@ namespace RobotAbuse
         MovementController movement;
         ObjectViewer objectViewer;
         
-        private float verticalRotation;//Used for camera looking.
-        private Vector3 mousePosition;//Used for object dragging.
+        float verticalRotation;//Used for camera looking.
+        Vector3 mousePosition;//Used for object dragging.
 
         public event EventHandler OnFireCanceledEvent;
 
-        private void Awake()
+        void Awake()
         {
             characterController = gameObject.GetComponent<CharacterController>();
             mainCamera = Camera.main;
@@ -55,7 +55,7 @@ namespace RobotAbuse
             objectViewer = gameObject.GetComponent<ObjectViewer>();
         }
 
-        private void Update()
+        void Update()
         {  
             HandleMovement();
             HandleRotation();     
@@ -64,9 +64,9 @@ namespace RobotAbuse
         }
 
         Vector3 currentInputVector;
-        private Vector3 smoothInputVelocity;
+        Vector3 smoothInputVelocity;
 
-        private void HandleMovement()
+        void HandleMovement()
         {
             if (movement.IsMoving)
             {
@@ -77,7 +77,7 @@ namespace RobotAbuse
             }
         }
 
-        private void HandleRotation()
+        void HandleRotation()
         {
             if (movement.IsMoving)
             {
@@ -89,7 +89,7 @@ namespace RobotAbuse
             }
         }
 
-        private void HandleDragging()
+        void HandleDragging()
         {
             if (objectViewer.IsDragging)
             {
@@ -99,7 +99,7 @@ namespace RobotAbuse
             }
         }
 
-        private void HandleObjectSensing()
+        void HandleObjectSensing()
         {
             if (!objectViewer.IsDragging)
             {
@@ -108,17 +108,17 @@ namespace RobotAbuse
             }
         }
 
-        private void OnLookTrigger(InputAction.CallbackContext context)
+        void OnLookTrigger(InputAction.CallbackContext context)
         {
             movement.IsMoving = true;
         }
 
-        private void OnLookTriggerCancled(InputAction.CallbackContext context)
+        void OnLookTriggerCancled(InputAction.CallbackContext context)
         {
             movement.IsMoving = false;
         }
 
-        private void OnFire(InputAction.CallbackContext context)
+        void OnFire(InputAction.CallbackContext context)
         {
             var inputPosition = Mouse.current.position.value;
             if(objectViewer.DetectedGameObject != null && !objectViewer.IsDragging) 
@@ -132,7 +132,7 @@ namespace RobotAbuse
             }
             
         }
-        private void OnFireCanceled(InputAction.CallbackContext context)
+        void OnFireCanceled(InputAction.CallbackContext context)
         {
             OnFireCanceledEvent?.Invoke(this, EventArgs.Empty);
         }

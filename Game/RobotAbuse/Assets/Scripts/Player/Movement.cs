@@ -6,11 +6,11 @@ namespace RobotAbuse
     public class MovementController
     {
         public bool IsMoving;
-        private Vector3 currentInputVector;
-        private Vector3 smoothInputVelocity;
+        Vector3 currentInputVector;
+        Vector3 smoothInputVelocity;
 
-        private float vertRot;
-        private float verticalLookVelocity;//empty value for SmoothDamp
+        float vertRot;
+        float verticalLookVelocity;//empty value for SmoothDamp
         public UnityEngine.Vector3 Calculate(Transform transform, Vector3 moveInput, float speed)
         {
             var input = new Vector3();
