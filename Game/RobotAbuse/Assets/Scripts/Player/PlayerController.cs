@@ -120,8 +120,12 @@ namespace RobotAbuse
             var inputPosition = Mouse.current.position.value;
             if(objectViewer.DetectedGameObject != null && !objectViewer.IsDragging) 
             {
-                mousePosition = new Vector3(inputPosition.x, inputPosition.y, 0) - mainCamera.WorldToScreenPoint(objectViewer.DetectedGameObject.transform.position);
                 objectViewer.OnObjectDetected();
+
+                if(objectViewer.IsDragging)
+                {
+                    mousePosition = new Vector3(inputPosition.x, inputPosition.y, 0) - mainCamera.WorldToScreenPoint(objectViewer.DetectedGameObject.transform.position);
+                }
             }
             
         }
