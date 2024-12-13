@@ -66,6 +66,8 @@ namespace RobotAbuse
             IsConnected = true;
             AttachedPartSocket = newAttachedPartSocket;
             AttachedPartSocket.IsConnected = true;
+            AttachedPartSocket.AttachedPartSocket = this;
+
             OnSocketPartsConnected?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = this, OtherPartSocket = AttachedPartSocket });
             OnSocketPartsConnected?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = AttachedPartSocket, OtherPartSocket = this });
         }
@@ -91,6 +93,9 @@ namespace RobotAbuse
             {
                 IsConnected = false;
                 eventArgs.OtherPartSocket.IsConnected = false;
+
+                AttachedPartSocket = null;
+                eventArgs.OtherPartSocket.AttachedPartSocket = null;
             }
             ShowSocket();
         }

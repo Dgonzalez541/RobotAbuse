@@ -116,6 +116,10 @@ namespace RobotAbuse
             if (socketObject != null && socketObject.PartSocket != null)
             {
                 socketObject.PartSocket.OnSocketPartsConnected += PartSocket_OnSocketsConnected;
+                if (socketObject.PartSocket.AttachedPartSocket != null)
+                { 
+                socketObject.PartSocket.AttachedPartSocket.OnSocketPartsConnected += PartSocket_OnSocketsConnected;
+                }
             }
 
             PartSocket otherPartSocket = null;
@@ -130,6 +134,7 @@ namespace RobotAbuse
                 textLabel.text = "Disconnected!";
                 clickAudioSource.Play(0);
                 OnSocketDetach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = socketObject.PartSocket, OtherPartSocket = otherPartSocket });
+                OnSocketDetach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = otherPartSocket , OtherPartSocket = socketObject.PartSocket });
             }
 
             OnShowAllSockets?.Invoke(this, EventArgs.Empty);
@@ -154,7 +159,7 @@ namespace RobotAbuse
         //Snaps sockets in place
         void HandleSocketConnectionSnap()
         {
-            if (IsConnectingSocket && SelectedGameObject != null && SelectedViewableObject != null)
+            if (IsConnectingSocket && SelectedGameObject != null && SelectedViewableObject != null && SelectedGameObject.GetComponentInParent<ISocketable>().PartSocket != null && SelectedGameObject.GetComponentInParent<ISocketable>().PartSocket.AttachedPartSocket != null)
             {
                 StopDraggingObject();
 
@@ -174,6 +179,7 @@ namespace RobotAbuse
                     var sockatableVo = SelectedViewableObject as ISocketable;
 
                     OnSocketAttach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = sockatableVo.PartSocket, OtherPartSocket = sockatableVo.PartSocket.AttachedPartSocket });
+                    OnSocketAttach?.Invoke(this, new OnSocketPartsInteractionEventArgs { GrabbedPartSocket = sockatableVo.PartSocket.AttachedPartSocket, OtherPartSocket = sockatableVo.PartSocket });
                 }
             }
         }
@@ -217,6 +223,10 @@ namespace RobotAbuse
             {
                 var socketObject = SelectedGameObject.GetComponent<ISocketable>();
                 socketObject.PartSocket.OnSocketPartsConnected -= PartSocket_OnSocketsConnected;
+                if (socketObject.PartSocket.AttachedPartSocket != null)
+                {
+                    socketObject.PartSocket.AttachedPartSocket.OnSocketPartsConnected -= PartSocket_OnSocketsConnected;
+                }
             }
 
             playerController.OnFireCanceledEvent -= PlayerController_OnFireCanceledEvent;
