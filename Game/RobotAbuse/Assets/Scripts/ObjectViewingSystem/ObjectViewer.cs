@@ -100,7 +100,6 @@ namespace RobotAbuse
                         }
                     }
                 }
-                
             }
 
             ClearDetectedObject();
@@ -137,7 +136,6 @@ namespace RobotAbuse
             }
 
             OnShowAllSockets?.Invoke(this, EventArgs.Empty);
-            
         }
 
         void PartSocket_OnSocketsConnected(object sender, System.EventArgs e)
