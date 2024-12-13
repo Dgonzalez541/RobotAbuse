@@ -25,8 +25,6 @@ namespace RobotAbuse
 
             SocketOwner = GetComponentInParent<IViewableObject>();
 
-            ObjectViewer = GameObject.FindObjectOfType<ObjectViewer>();
-
             HideSocket();
 
             //Find already attached sockets at start
@@ -72,7 +70,7 @@ namespace RobotAbuse
         private void ObjectViewer_OnSocketDetach(object sender, EventArgs e)
         {
             var eventArgs = e as OnSocketPartsInteractionEventArgs;
-            if (IsConnected && eventArgs.GrabbedPartSocket == this && eventArgs.OtherPartSocket.IsConnected)
+            if (IsConnected && eventArgs.GrabbedPartSocket == this &&  eventArgs.OtherPartSocket.IsConnected)
             {
                 IsConnected = false;
                 eventArgs.OtherPartSocket.IsConnected = false;
